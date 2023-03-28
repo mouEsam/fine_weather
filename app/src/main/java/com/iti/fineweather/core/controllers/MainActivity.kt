@@ -32,7 +32,7 @@ private val routes = listOf(
     },
     SimpleRouteInfo(
         path = "test1",
-        args = listOf(RouteArgument("i", dataType = NavType.IntType))
+        args = listOf(RouteArgument("i", dataType = NavType.IntType, defaultValue = 0))
     ) {
         SecondGreeting()
     }
