@@ -7,6 +7,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import timber.log.Timber
 
 object LocalNavigation {
     val navController: NavController
@@ -23,11 +25,13 @@ object LocalNavigation {
         get() = LocalBackStackEntry.current
 }
 
-private val LocalNavController: ProvidableCompositionLocal<NavController> = staticCompositionLocalOf { error("not provided") }
+private val LocalNavController: ProvidableCompositionLocal<NavController> =
+    staticCompositionLocalOf { error("not provided") }
 
 private val LocalRouteInfo: ProvidableCompositionLocal<RouteInfo> = staticCompositionLocalOf { error("not provided") }
 
-private val LocalBackStackEntry: ProvidableCompositionLocal<NavBackStackEntry> = staticCompositionLocalOf { error("not provided") }
+private val LocalBackStackEntry: ProvidableCompositionLocal<NavBackStackEntry> =
+    staticCompositionLocalOf { error("not provided") }
 
 @Composable
 fun AppNavigation(
@@ -46,7 +50,16 @@ fun AppNavigation(
             modifier = modifier
         ) {
             for (route in routesState) {
-                composable(route.toRouteUri().toString()) { backStackEntry ->
+                composable(
+                    route = route.toRouteUri().toString(),
+                    arguments = route.args.map { arg ->
+                        navArgument(arg.name) {
+                            type = arg.dataType
+                            nullable = arg.nullable
+                            defaultValue = arg.defaultValue
+                        }
+                    }
+                ) { backStackEntry ->
                     CompositionLocalProvider(
                         LocalRouteInfo provides route,
                         LocalBackStackEntry provides backStackEntry,

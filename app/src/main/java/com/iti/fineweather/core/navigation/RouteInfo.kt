@@ -59,9 +59,16 @@ data class RouteArgument<T>(
     val name: String,
     val dataType: NavType<T>,
     val defaultValue: T? = null,
-    val nullable: Boolean = false,
+    val nullable: Boolean = dataType.isNullableAllowed,
     val argType: Type = Type.QUERY,
 ) {
+
+    init {
+        if (defaultValue == null && !dataType.isNullableAllowed) {
+            throw InvalidNullableArgumentException(this)
+        }
+    }
+
     enum class Type {
         PATH,
         QUERY
@@ -70,9 +77,11 @@ data class RouteArgument<T>(
     @Composable
     fun get(): T? {
         return LocalNavigation.backStackEntry.arguments?.let { bundle ->
-            bundle.getString(name)?.let { dataType.parseValue(it) }
+            dataType[bundle, name]
         }
     }
 }
 
 class MissingArgumentException(val arg: RouteArgument<*>): Exception()
+
+class InvalidNullableArgumentException(val arg: RouteArgument<*>): Exception()
