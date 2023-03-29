@@ -17,6 +17,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
+// TODO: refactor and split
+
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
