@@ -1,35 +1,40 @@
 package com.iti.fineweather.core.navigation
 
 import android.net.Uri
+import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavOptions
 import androidx.navigation.NavType
+import androidx.navigation.Navigator
 
 interface RouteInfo {
     val path: String
 
     val args: List<RouteArgument<*>>
+        get() = listOf()
 
     val screen: @Composable () -> Unit
 
-    fun toRouteUri(): Uri {
-        var uriBuilder = Uri.parse(path).buildUpon()
+    fun toRoute(): String {
+        val paths = mutableListOf(path)
+        var uriBuilder = Uri.parse("").buildUpon()
         for (arg in args) {
-            uriBuilder = when (arg.argType) {
+           when (arg.argType) {
                 RouteArgument.Type.PATH -> {
-                    uriBuilder.appendPath("{${arg.name}}")
+                    paths += "{${arg.name}}"
                 }
                 RouteArgument.Type.QUERY -> {
-                    uriBuilder.appendQueryParameter(arg.name, "{${arg.name}}")
+                    uriBuilder = uriBuilder.appendQueryParameter(arg.name, "{${arg.name}}")
                 }
             }
         }
-        return uriBuilder.build()
+        return paths.joinToString(separator = "/") + uriBuilder.build()
     }
 
     fun toNavUri(args: Map<String, Any?> = mapOf()): Uri {
         var uriBuilder = Uri.parse(path).buildUpon()
         for (arg in this.args) {
-            val value = args[arg.name]
+            val value = args[arg.name] ?: arg.defaultValue
             if (value == null && (!arg.nullable || arg.argType == RouteArgument.Type.PATH)) {
                 throw MissingArgumentException(arg)
             }
@@ -46,6 +51,18 @@ interface RouteInfo {
             }
         }
         return uriBuilder.build()
+    }
+
+    fun toNavRequest(
+        args: Map<String, Any?> = mapOf(),
+        navOptions: NavOptions? = null,
+        navigatorExtras: Navigator.Extras? = null
+    ): NavRequest {
+        return NavRequest(
+            uri = toNavUri(args),
+            navOptions = navOptions,
+            navigatorExtras = navigatorExtras,
+        )
     }
 }
 
@@ -64,6 +81,9 @@ data class RouteArgument<T>(
 ) {
 
     init {
+        if (nullable && !dataType.isNullableAllowed) {
+            throw InvalidNullableArgumentException(this)
+        }
         if (defaultValue == null && !dataType.isNullableAllowed) {
             throw InvalidNullableArgumentException(this)
         }
@@ -82,6 +102,17 @@ data class RouteArgument<T>(
     }
 }
 
+data class NavRequest(
+    val uri: Uri,
+    val additionalArgs: Bundle? = null,
+    val navOptions: NavOptions? = null,
+    val navigatorExtras: Navigator.Extras? = null
+)
+
 class MissingArgumentException(val arg: RouteArgument<*>): Exception()
 
 class InvalidNullableArgumentException(val arg: RouteArgument<*>): Exception()
+
+interface Screen<R: RouteInfo> {
+    val routeInfo: R
+}
