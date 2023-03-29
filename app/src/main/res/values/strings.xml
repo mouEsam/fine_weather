@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Fine Weather</string>
+    <string name="placeholder">Placeholder</string>
 </resources>

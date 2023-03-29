@@ -8,7 +8,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import timber.log.Timber
 
 object LocalNavigation {
     val navController: NavController
@@ -46,12 +45,12 @@ fun AppNavigation(
     ) {
         NavHost(
             navController = navController,
-            startDestination = routesState.first().toRouteUri().toString(),
+            startDestination = routesState.first().toRoute(),
             modifier = modifier
         ) {
             for (route in routesState) {
                 composable(
-                    route = route.toRouteUri().toString(),
+                    route = route.toRoute(),
                     arguments = route.args.map { arg ->
                         navArgument(arg.name) {
                             type = arg.dataType

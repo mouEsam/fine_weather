@@ -11,11 +11,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
-import com.iti.fineweather.core.navigation.*
+import com.iti.fineweather.core.navigation.AppNavigation
+import com.iti.fineweather.core.navigation.LocalNavigation
+import com.iti.fineweather.core.navigation.RouteArgument
+import com.iti.fineweather.core.navigation.SimpleRouteInfo
 import com.iti.fineweather.core.theme.FineWeatherTheme
+import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.features.home.views.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -35,7 +39,8 @@ private val routes = listOf(
         args = listOf(RouteArgument("i", dataType = NavType.IntType, defaultValue = 0))
     ) {
         SecondGreeting()
-    }
+    },
+    HomeScreen.HomeRoute,
 )
 
 @AndroidEntryPoint
@@ -60,8 +65,8 @@ fun Greeting(name: String) {
     Column {
         Text(text = "Hello $name!")
         Button(onClick = {
-            Timber.d(routes.last().toNavUri(mapOf("i" to 1)).toString())
-            navController.navigate(routes.last().toNavUri(mapOf("i" to 1)).toString())
+            Timber.d(HomeScreen.HomeRoute.toRoute())
+            navController.navigate(HomeScreen.HomeRoute.toNavRequest())
         }) {
             Text("Navigate")
         }
