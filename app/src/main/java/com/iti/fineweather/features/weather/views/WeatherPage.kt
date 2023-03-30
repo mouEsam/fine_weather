@@ -7,3 +7,4 @@ import androidx.compose.ui.Modifier
 fun WeatherPage(modifier: Modifier = Modifier) {
 
 }
+

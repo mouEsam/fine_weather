@@ -1,6 +1,7 @@
 package com.iti.fineweather.core.di
 
 import com.google.gson.*
+import com.iti.fineweather.BuildConfig
 import com.iti.fineweather.features.weather.helpers.TemperatureDeserializer
 import com.iti.fineweather.features.weather.models.Temperature
 import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
@@ -53,7 +54,7 @@ object AppModule {
     @Singleton
     @ApiKey
     fun provideWeatherApiKey(): String {
-        return "4020f82d313de8db8252dc835398f48e"
+        return BuildConfig.WEATHER_API_KEY
     }
 
     @Provides

@@ -3,7 +3,12 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'dagger.hilt.android.plugin'
     id "kotlin-kapt"
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
 }
+
+def localPropertiesFile = rootProject.file("local.properties") as File
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
 
 android {
     namespace 'com.iti.fineweather'
@@ -17,6 +22,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "WEATHER_API_KEY", "\"${localProperties["WEATHER_API_KEY"]}\"")
+
         vectorDrawables {
             useSupportLibrary true
         }
@@ -50,6 +58,7 @@ android {
 
 dependencies {
 
+
     implementation "androidx.core:core-ktx:$core_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
 
@@ -72,6 +81,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:$lifecycle_version"
     implementation "androidx.activity:activity-compose:$compose_navigation_version"
     implementation "androidx.navigation:navigation-compose:$navigation_version"
+    implementation "com.google.accompanist:accompanist-permissions:$accompanist_permissions_version"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
@@ -81,6 +91,7 @@ dependencies {
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
+
     kapt "androidx.room:room-compiler:$room_version"
 
     // Coil
@@ -92,6 +103,12 @@ dependencies {
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
     implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_version"
+
+    // Google maps
+    implementation "com.google.maps.android:maps-compose:$google_maps_version"
+    implementation "com.google.android.gms:play-services-maps:$playservices_maps_version"
+    implementation "com.google.android.libraries.places:places:$google_places_version"
+    implementation 'androidx.appcompat:appcompat:1.6.1' // Needed for google places plugin
 
     // Timber
     implementation "com.jakewharton.timber:timber:$timber_version"
