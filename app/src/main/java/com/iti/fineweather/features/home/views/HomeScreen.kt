@@ -3,24 +3,20 @@ package com.iti.fineweather.features.home.views
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
+import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
+import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.navigation.*
-import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.core.utils.setPopUpToFirst
 import com.iti.fineweather.features.home.helpers.BarNavigationItem
-import timber.log.Timber
 
 object HomeScreen: Screen<HomeScreen.HomeRoute> {
 
@@ -68,39 +64,43 @@ fun HomeScreen() {
             items.firstOrNull { screen -> segment == screen.path }
         }
     }
-    Scaffold(
-        bottomBar = {
-            BottomNavigation {
-                items.forEach { screen ->
-                    BottomNavigationItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-                        label = { Text(stringResource(screen.resourceId)) },
-                        selected = screen == currentSelected,
-                        onClick = {
-                            currentBackStackEntry.arguments?.putString(
-                                HomeScreen.HomeRoute.args.first().name, screen.path
-                            )
-                            segment = screen.path
-                        }
-                    )
+    CompositionScaffoldProvider {
+        Scaffold(
+            scaffoldState = LocalScaffold.current,
+            bottomBar = {
+                BottomNavigation {
+                    items.forEach { screen ->
+                        BottomNavigationItem(
+                            icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                            label = { Text(stringResource(screen.resourceId)) },
+                            selected = screen == currentSelected,
+                            onClick = {
+                                currentBackStackEntry.arguments?.putString(
+                                    HomeScreen.HomeRoute.args.first().name, screen.path
+                                )
+                                segment = screen.path
+                            }
+                        )
+                    }
                 }
             }
-        }
-    ) { innerPadding ->
-        AnimatedContent(
-            targetState = currentSelected,
-            transitionSpec = {
-                (
-                    slideInHorizontally { width -> width } + fadeIn() with
-                            slideOutHorizontally { width -> -width } + fadeOut()
-                ).using(
-                    SizeTransform(clip = false)
-                )
+        ) { innerPadding ->
+            AnimatedContent(
+                targetState = currentSelected,
+                transitionSpec = {
+                    (
+                            slideInHorizontally { width -> width } + fadeIn() with
+                                    slideOutHorizontally { width -> -width } + fadeOut()
+                            ).using(
+                            SizeTransform(clip = false)
+                        )
+                }
+            ) { currentSelected ->
+                currentSelected?.Content(modifier = Modifier.padding(innerPadding))
             }
-        ) { currentSelected ->
-            currentSelected?.Content(modifier = Modifier.padding(innerPadding))
         }
     }
+
 }
 
 @Composable

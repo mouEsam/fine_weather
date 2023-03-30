@@ -12,6 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavType
 import com.iti.fineweather.core.navigation.AppNavigation
 import com.iti.fineweather.core.navigation.LocalNavigation
@@ -20,8 +23,12 @@ import com.iti.fineweather.core.navigation.SimpleRouteInfo
 import com.iti.fineweather.core.theme.FineWeatherTheme
 import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.home.views.HomeScreen
+import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
+import com.iti.fineweather.features.weather.views.WeatherScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 private val routes = listOf(
     SimpleRouteInfo(
@@ -41,13 +48,25 @@ private val routes = listOf(
         SecondGreeting()
     },
     HomeScreen.HomeRoute,
+    WeatherScreen.WeatherRoute,
 )
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
+    @Inject lateinit var weatherRemoteService: WeatherRemoteService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                val weather = weatherRemoteService.getWeather(
+                    latitude = 39.10622,
+                    longitude = -95.7230867,
+                )
+                Timber.d(weather.toString())
+            }
+        }
         setContent {
             FineWeatherTheme {
                 // A surface container using the 'background' color from the theme
