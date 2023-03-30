@@ -1,18 +1,29 @@
 package com.iti.fineweather.features.weather.views
 
+import android.app.Activity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.Autocomplete
+import com.google.android.libraries.places.widget.AutocompleteActivity
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
 import com.iti.fineweather.core.helpers.LocalScaffold
-import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.navigation.RouteArgument
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
-import com.iti.fineweather.features.home.helpers.BarNavigationItem
+import timber.log.Timber
 
 object WeatherScreen: Screen<WeatherScreen.WeatherRoute> {
 
@@ -30,16 +41,9 @@ object WeatherScreen: Screen<WeatherScreen.WeatherRoute> {
     }
 }
 
-private val items = listOf(
-    BarNavigationItem.Home,
-    BarNavigationItem.Bookmarks,
-)
-
 @Composable
 @VisibleForTesting
 fun WeatherScreen() {
-    LocalNavigation.navController
-    val currentBackStackEntry = LocalNavigation.backStackEntry
     CompositionScaffoldProvider {
         Scaffold(
             scaffoldState = LocalScaffold.current,
@@ -50,3 +54,4 @@ fun WeatherScreen() {
         }
     }
 }
+

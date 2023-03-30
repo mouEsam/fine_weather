@@ -14,7 +14,8 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/Theme.FineWeather"
-            tools:targetApi="31">
+            android:enableOnBackInvokedCallback="true"
+            tools:targetApi="tiramisu">
         <activity
                 android:name=".core.controllers.MainActivity"
                 android:exported="true"
@@ -30,6 +31,10 @@
                     android:name="android.app.lib_name"
                     android:value=""/>
         </activity>
+
+        <meta-data
+                android:name="com.google.android.geo.API_KEY"
+                android:value="${MAPS_API_KEY}" />
     </application>
 
 </manifest>

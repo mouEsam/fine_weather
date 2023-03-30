@@ -23,6 +23,7 @@ import com.iti.fineweather.core.navigation.SimpleRouteInfo
 import com.iti.fineweather.core.theme.FineWeatherTheme
 import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.home.views.HomeScreen
+import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
 import com.iti.fineweather.features.weather.views.WeatherScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,8 +48,9 @@ private val routes = listOf(
     ) {
         SecondGreeting()
     },
-    HomeScreen.HomeRoute,
-    WeatherScreen.WeatherRoute,
+    HomeScreen.routeInfo,
+    WeatherScreen.routeInfo,
+    MapScreen.routeInfo,
 )
 
 @AndroidEntryPoint
@@ -60,11 +62,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val weather = weatherRemoteService.getWeather(
-                    latitude = 39.10622,
-                    longitude = -95.7230867,
-                )
-                Timber.d(weather.toString())
+//                val weather = weatherRemoteService.getWeather(
+//                    latitude = 39.10622,
+//                    longitude = -95.7230867,
+//                )
+//                Timber.d(weather.toString())
             }
         }
         setContent {
