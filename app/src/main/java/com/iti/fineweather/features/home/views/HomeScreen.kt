@@ -55,7 +55,6 @@ private val items = listOf(
 @Composable
 @VisibleForTesting
 fun HomeScreen() {
-    LocalNavigation.navController
     val currentBackStackEntry = LocalNavigation.backStackEntry
     val initialSegment = HomeScreen.HomeRoute.args.first().get() as String? ?: ""
     var segment by remember { mutableStateOf(initialSegment) }
@@ -88,12 +87,15 @@ fun HomeScreen() {
             AnimatedContent(
                 targetState = currentSelected,
                 transitionSpec = {
-                    (
-                            slideInHorizontally { width -> width } + fadeIn() with
-                                    slideOutHorizontally { width -> -width } + fadeOut()
-                            ).using(
-                            SizeTransform(clip = false)
-                        )
+                    if (items.indexOf(targetState) > items.indexOf(initialState)) {
+                        slideInHorizontally { width -> width } + fadeIn() with
+                                slideOutHorizontally { width -> -width } + fadeOut()
+                    } else {
+                        slideInHorizontally { width -> -width } + fadeIn() with
+                                slideOutHorizontally { width -> width } + fadeOut()
+                    }.using(
+                        SizeTransform(clip = false)
+                    )
                 }
             ) { currentSelected ->
                 currentSelected?.Content(modifier = Modifier.padding(innerPadding))

@@ -62,11 +62,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                val weather = weatherRemoteService.getWeather(
-                    latitude = 39.10622,
-                    longitude = -95.7230867,
-                )
-                Timber.d(weather.toString())
+//                val weather = weatherRemoteService.getWeather(
+//                    latitude = 39.10622,
+//                    longitude = -95.7230867,
+//                )
+//                Timber.d(weather.toString())
             }
         }
         setContent {
