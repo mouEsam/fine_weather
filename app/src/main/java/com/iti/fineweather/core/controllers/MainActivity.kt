@@ -25,7 +25,7 @@ import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.home.views.HomeScreen
 import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
-import com.iti.fineweather.features.weather.views.WeatherScreen
+import com.iti.fineweather.features.settings.views.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -49,7 +49,7 @@ private val routes = listOf(
         SecondGreeting()
     },
     HomeScreen.routeInfo,
-    WeatherScreen.routeInfo,
+    SettingsScreen.routeInfo,
     MapScreen.routeInfo,
 )
 

@@ -8,6 +8,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.gson.GsonConverterFactory
@@ -42,5 +45,11 @@ object AppModule {
     fun provideLoggingInterceptor(): Interceptor {
         return HttpLoggingInterceptor()
             .setLevel(HttpLoggingInterceptor.Level.BODY)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCoroutineScope(): CoroutineScope {
+        return CoroutineScope(Dispatchers.IO + SupervisorJob())
     }
 }

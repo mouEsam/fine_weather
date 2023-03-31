@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+option java_package = "com.iti.fineweather.features.settings.models";
+option java_multiple_files = true;
+
+message UserPreferences {
+    enum LocationType {
+        MAP = 0;
+        GPS = 1;
+    }
+    optional LocationType location_type = 1;
+
+    message MapPlace {
+        string name = 1;
+
+        message Location {
+            double latitude = 1;
+            double longitude = 2;
+        }
+
+        Location location = 2;
+    }
+    optional MapPlace location = 2;
+
+    enum TemperatureUnit {
+        KELVIN = 0;
+        CELSIUS = 1;
+        FAHRENHEIT = 2;
+    }
+    optional TemperatureUnit temperature_unit = 3;
+
+    enum WindSpeedUnit {
+        METER_HOUR = 0;
+        MILES_HOUR = 1;
+    }
+    optional WindSpeedUnit wind_speed_unit = 4;
+
+    enum Language {
+        ARABIC = 0;
+        ENGLISH = 1;
+    }
+    optional Language language = 5;
+}

@@ -6,7 +6,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.core.helpers.UiState
-import com.iti.fineweather.features.map.models.MapPlace
+import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.repositories.MapPlacesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -19,7 +19,7 @@ import javax.inject.Inject
 class MapPlaceViewModel @Inject constructor(private val placesRepository: MapPlacesRepository) : ViewModel() {
 
     private var job: Job? = null
-    private val _uiState = MutableStateFlow<UiState<MapPlace>>(UiState.Initial())
+    private val _uiState = MutableStateFlow<UiState<MapPlaceResult>>(UiState.Initial())
     val uiState = _uiState.asStateFlow()
 
     fun getPlace(place: AutocompletePrediction) {
