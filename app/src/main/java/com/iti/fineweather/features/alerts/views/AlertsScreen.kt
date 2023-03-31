@@ -1,4 +1,4 @@
-package com.iti.fineweather.features.settings.views
+package com.iti.fineweather.features.alerts.views
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.padding
@@ -10,26 +10,26 @@ import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
 
-object SettingsScreen: Screen<SettingsScreen.SettingsRoute> {
+object AlertsScreen: Screen<AlertsScreen.AlertsRoute> {
 
-    override val routeInfo: SettingsRoute = SettingsRoute
+    override val routeInfo: AlertsRoute = AlertsRoute
 
-    object SettingsRoute: RouteInfo {
-        override val path: String = "settings"
+    object AlertsRoute: RouteInfo {
+        override val path: String = "alerts"
         override val screen: @Composable () -> Unit = @Composable {
-            SettingsScreen()
+            AlertsScreen()
         }
     }
 }
 
 @Composable
 @VisibleForTesting
-fun SettingsScreen() {
+fun AlertsScreen() {
     CompositionScaffoldProvider {
         Scaffold(
             scaffoldState = LocalScaffold.current,
         ) { innerPadding ->
-            SettingsPage(
+            AlertsPage(
                 modifier = Modifier.padding(innerPadding)
             )
         }

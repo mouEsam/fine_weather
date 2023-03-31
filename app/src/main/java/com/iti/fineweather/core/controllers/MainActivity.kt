@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -22,10 +23,11 @@ import com.iti.fineweather.core.navigation.RouteArgument
 import com.iti.fineweather.core.navigation.SimpleRouteInfo
 import com.iti.fineweather.core.theme.FineWeatherTheme
 import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.features.alerts.views.AlertsScreen
 import com.iti.fineweather.features.home.views.HomeScreen
 import com.iti.fineweather.features.map.views.MapScreen
-import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
 import com.iti.fineweather.features.settings.views.SettingsScreen
+import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -49,8 +51,9 @@ private val routes = listOf(
         SecondGreeting()
     },
     HomeScreen.routeInfo,
-    SettingsScreen.routeInfo,
     MapScreen.routeInfo,
+    SettingsScreen.routeInfo,
+    AlertsScreen.routeInfo,
 )
 
 @AndroidEntryPoint
@@ -59,6 +62,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var weatherRemoteService: WeatherRemoteService
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {

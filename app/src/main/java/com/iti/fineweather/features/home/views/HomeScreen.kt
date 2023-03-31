@@ -2,6 +2,7 @@ package com.iti.fineweather.features.home.views
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.*
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -9,6 +10,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
@@ -67,19 +69,28 @@ fun HomeScreen() {
         Scaffold(
             scaffoldState = LocalScaffold.current,
             bottomBar = {
-                BottomNavigation {
-                    items.forEach { screen ->
-                        BottomNavigationItem(
-                            icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
-                            label = { Text(stringResource(screen.resourceId)) },
-                            selected = screen == currentSelected,
-                            onClick = {
-                                currentBackStackEntry.arguments?.putString(
-                                    HomeScreen.HomeRoute.args.first().name, screen.path
-                                )
-                                segment = screen.path
-                            }
-                        )
+                Surface (
+                    color = MaterialTheme.colors.primarySurface,
+                    elevation = BottomNavigationDefaults.Elevation,
+                ) {
+                    BottomNavigation(
+                        modifier = Modifier
+                            .navigationBarsPadding(),
+                        elevation = 0.dp,
+                    ) {
+                        items.forEach { screen ->
+                            BottomNavigationItem(
+                                icon = { Icon(Icons.Filled.Favorite, contentDescription = null) },
+                                label = { Text(stringResource(screen.resourceId)) },
+                                selected = screen == currentSelected,
+                                onClick = {
+                                    currentBackStackEntry.arguments?.putString(
+                                        HomeScreen.HomeRoute.args.first().name, screen.path
+                                    )
+                                    segment = screen.path
+                                }
+                            )
+                        }
                     }
                 }
             }
