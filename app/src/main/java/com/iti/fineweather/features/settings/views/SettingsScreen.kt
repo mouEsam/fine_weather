@@ -1,27 +1,21 @@
-package com.iti.fineweather.features.weather.views
+package com.iti.fineweather.features.settings.views
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
 import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
 import com.iti.fineweather.core.helpers.LocalScaffold
-import com.iti.fineweather.core.navigation.RouteArgument
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
 
-object WeatherScreen: Screen<WeatherScreen.WeatherRoute> {
+object SettingsScreen: Screen<SettingsScreen.SettingsRoute> {
 
-    override val routeInfo: WeatherRoute = WeatherRoute
+    override val routeInfo: SettingsRoute = SettingsRoute
 
-    object WeatherRoute: RouteInfo {
+    object SettingsRoute: RouteInfo {
         override val path: String = "weather"
-        override val args: List<RouteArgument<*>> = listOf(RouteArgument(
-            name = "location",
-            dataType = NavType.StringType,
-        ))
         override val screen: @Composable () -> Unit = @Composable {
             WeatherScreen()
         }
@@ -35,7 +29,7 @@ fun WeatherScreen() {
         Scaffold(
             scaffoldState = LocalScaffold.current,
         ) { innerPadding ->
-            WeatherPage(
+            SettingsPage(
                 modifier = Modifier.padding(innerPadding)
             )
         }

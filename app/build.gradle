@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id "kotlin-kapt"
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id "com.google.protobuf"
 }
 
 def localPropertiesFile = rootProject.file("local.properties") as File
@@ -92,7 +93,6 @@ dependencies {
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
-
     kapt "androidx.room:room-compiler:$room_version"
 
     // Coil
@@ -111,6 +111,10 @@ dependencies {
     implementation "com.google.android.libraries.places:places:$google_places_version"
     implementation 'androidx.appcompat:appcompat:1.6.1' // Needed for google places plugin
 
+    // Datastore
+    implementation "androidx.datastore:datastore:$proto_datastore_version"
+    implementation  "com.google.protobuf:protobuf-javalite:$protobuf_version"
+
     // Timber
     implementation "com.jakewharton.timber:timber:$timber_version"
 
@@ -120,4 +124,23 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:$protobuf_compiler_version"
+    }
+
+    // Generates the java Protobuf-lite code for the Protobufs in this project. See
+    // https://github.com/google/protobuf-gradle-plugin#customizing-protobuf-compilation
+    // for more information.
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+            }
+        }
+    }
 }

@@ -24,7 +24,7 @@ import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
 import com.iti.fineweather.core.theme.LocalAppTheme
-import com.iti.fineweather.features.map.models.MapPlace
+import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.viewmodels.MapPlaceViewModel
 import com.iti.fineweather.features.map.viewmodels.MapPlacesViewModel
 import kotlinx.coroutines.launch
@@ -53,7 +53,7 @@ fun MapScreen(
     val keyboard = LocalSoftwareKeyboardController.current
     val navController = LocalNavigation.navController
     val previousStackEntry = navController.previousBackStackEntry!!
-    val resultLiveData: MutableLiveData<MapPlace?> = previousStackEntry
+    val resultLiveData: MutableLiveData<MapPlaceResult?> = previousStackEntry
         .savedStateHandle
         .getLiveData(MapScreen.RESULT_KEY)
 
@@ -67,7 +67,7 @@ fun MapScreen(
             val properties by remember {
                 mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
             }
-            var selectedLocation by rememberSaveable { mutableStateOf<MapPlace?>(null) }
+            var selectedLocation by rememberSaveable { mutableStateOf<MapPlaceResult?>(null) }
             val cameraPositionState = rememberCameraPositionState {}
 
             DisposableEffect(key1 = true) {
@@ -78,7 +78,7 @@ fun MapScreen(
                 }
             }
 
-            fun onLocation(location: MapPlace) {
+            fun onLocation(location: MapPlaceResult) {
                 selectedLocation = location
                 coroutineScope.launch {
                     cameraPositionState.animate(

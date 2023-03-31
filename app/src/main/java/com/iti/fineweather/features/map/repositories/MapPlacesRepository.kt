@@ -12,7 +12,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.iti.fineweather.core.helpers.Resource
-import com.iti.fineweather.features.map.models.MapPlace
+import com.iti.fineweather.features.map.models.MapPlaceResult
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
@@ -37,7 +37,7 @@ class MapPlacesRepository @Inject constructor(
         resultMapper = { it.autocompletePredictions }
     )
 
-    suspend fun getPlace(place: AutocompletePrediction): Resource<MapPlace> = get(
+    suspend fun getPlace(place: AutocompletePrediction): Resource<MapPlaceResult> = get(
         taskCreator = { token ->
             placesClient.fetchPlace(
                 FetchPlaceRequest.builder(place.placeId, listOf(Place.Field.LAT_LNG, Place.Field.NAME))
@@ -46,20 +46,20 @@ class MapPlacesRepository @Inject constructor(
             )
         },
         resultMapper = {
-            MapPlace(
+            MapPlaceResult(
                 location = it.place.latLng!!,
                 name = it.place.name!!,
             )
         }
     )
 
-    suspend fun getPlace(location: LatLng): Resource<MapPlace> = suspendCoroutine { continuation ->
+    suspend fun getPlace(location: LatLng): Resource<MapPlaceResult> = suspendCoroutine { continuation ->
         geocoder.getAddress(location.latitude, location.longitude) { address, exception ->
             if (exception != null) {
                 continuation.resume(Resource.Error(exception))
             } else if (address != null) {
-                continuation.resume(Resource.RemoteSuccess(
-                    MapPlace(location, address.featureName)
+                continuation.resume(Resource.Success.Remote(
+                    MapPlaceResult(location, address.featureName)
                 ))
             } else {
                 continuation.resume(Resource.Error(Exception("Not found"))) // TODO: localize
@@ -91,7 +91,7 @@ class MapPlacesRepository @Inject constructor(
         val cancellationTokenSource = CancellationTokenSource()
         taskCreator(cancellationTokenSource.token).addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                continuation.resume(Resource.RemoteSuccess(resultMapper(task.result!!)))
+                continuation.resume(Resource.Success.Remote(resultMapper(task.result!!)))
             } else if (!task.isCanceled) {
                 continuation.resume(Resource.Error(task.exception!!))
             }
