@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import com.iti.fineweather.R
 import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.features.alerts.views.AlertsPage
 import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.weather.views.WeatherPage
 
@@ -18,7 +19,7 @@ sealed class BarNavigationItem(
     object Home : BarNavigationItem("base", R.string.placeholder) {
         @Composable
         override fun Content(modifier: Modifier) {
-            WeatherPage()
+            WeatherPage(modifier = modifier)
         }
     }
     object Bookmarks : BarNavigationItem("bookmarks", R.string.placeholder) {
@@ -30,6 +31,13 @@ sealed class BarNavigationItem(
             }) {
                 Text("Open map")
             }
+        }
+    }
+
+    object Alerts : BarNavigationItem("alerts", R.string.placeholder) {
+        @Composable
+        override fun Content(modifier: Modifier) {
+            AlertsPage(modifier = modifier)
         }
     }
 

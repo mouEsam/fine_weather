@@ -8,6 +8,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import dagger.multibindings.IntoSet
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -49,7 +50,12 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCoroutineScope(): CoroutineScope {
-        return CoroutineScope(Dispatchers.IO + SupervisorJob())
+    @IODispatcher
+    fun provideCoroutineDispatcher(): CoroutineDispatcher = Dispatchers.IO
+
+    @Provides
+    @Singleton
+    fun provideCoroutineScope(@IODispatcher dispatcher: CoroutineDispatcher): CoroutineScope {
+        return CoroutineScope(dispatcher + SupervisorJob())
     }
 }

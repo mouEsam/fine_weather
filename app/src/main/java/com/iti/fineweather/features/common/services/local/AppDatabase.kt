@@ -3,7 +3,7 @@ package com.iti.fineweather.features.common.services.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.iti.fineweather.features.alerts.entities.WeatherAlert
+import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import com.iti.fineweather.features.alerts.helpers.convertors.RepetitionTypeConvertor
 import com.iti.fineweather.features.alerts.services.local.WeatherAlertsDAO
 import com.iti.fineweather.features.common.helpers.convertors.DateConvertor
@@ -12,7 +12,7 @@ import com.iti.fineweather.features.common.helpers.convertors.LocalDateTimeConve
 import com.iti.fineweather.features.common.helpers.convertors.LocalTimeConvertor
 
 @Database(entities = [
-    WeatherAlert::class,
+    UserWeatherAlert::class,
 ], exportSchema = false, version = 1)
 @TypeConverters(value = [
     LocalDateConvertor::class,
