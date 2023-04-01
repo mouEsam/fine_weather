@@ -15,13 +15,13 @@ import javax.inject.Inject
 @HiltViewModel
 class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: WeatherAlertsRepository): ViewModel() {
 
-    private val uiState: SharedFlow<UiState<List<UserWeatherAlert>>> by lazy {
+    val uiState: StateFlow<UiState<List<UserWeatherAlert>>> by lazy {
         alertsRepository.weatherAlertsFlow.map { result ->
             when (result) {
                 is Resource.Success -> UiState.Loaded(result.data)
                 is Resource.Error ->  UiState.Error(result.error)
             }
-        }.shareIn(viewModelScope, started = SharingStarted.Lazily, replay = 1)
+        }.stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = UiState.Loading())
     }
 
     private val _operationState = MutableSharedFlow<UiState<Unit>>()

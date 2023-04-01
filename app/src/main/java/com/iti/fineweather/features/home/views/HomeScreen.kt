@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -52,6 +53,7 @@ object HomeScreen: Screen<HomeScreen.HomeRoute> {
 private val items = listOf(
     BarNavigationItem.Home,
     BarNavigationItem.Bookmarks,
+    BarNavigationItem.Alerts,
 )
 
 @Composable
@@ -68,6 +70,7 @@ fun HomeScreen() {
     CompositionScaffoldProvider {
         Scaffold(
             scaffoldState = LocalScaffold.current,
+            modifier = Modifier.statusBarsPadding(),
             bottomBar = {
                 Surface (
                     color = MaterialTheme.colors.primarySurface,

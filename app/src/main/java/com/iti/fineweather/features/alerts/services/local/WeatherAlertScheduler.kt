@@ -5,13 +5,14 @@ import androidx.work.*
 import com.iti.fineweather.features.alerts.entities.RepetitionType
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ActivityRetainedScoped
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
-@ActivityRetainedScoped
-class WeatherAlertScheduler(
+@Singleton
+class WeatherAlertScheduler @Inject constructor(
     @ApplicationContext private val context: Context,
     private val workManager: WorkManager,
 ) {
