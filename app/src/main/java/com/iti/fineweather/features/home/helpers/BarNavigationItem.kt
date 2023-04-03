@@ -1,15 +1,12 @@
 package com.iti.fineweather.features.home.helpers
 
 import androidx.annotation.StringRes
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.iti.fineweather.R
-import com.iti.fineweather.core.navigation.LocalNavigation
-import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.alerts.views.AlertsPage
-import com.iti.fineweather.features.map.views.MapScreen
+import com.iti.fineweather.features.bookmarks.views.BookmarksPage
+import com.iti.fineweather.features.settings.views.SettingsPage
 import com.iti.fineweather.features.weather.views.WeatherPage
 
 sealed class BarNavigationItem(
@@ -25,12 +22,7 @@ sealed class BarNavigationItem(
     object Bookmarks : BarNavigationItem("bookmarks", R.string.placeholder) {
         @Composable
         override fun Content(modifier: Modifier) {
-            val navController = LocalNavigation.navController
-            Button(onClick = {
-                navController.navigate(MapScreen.routeInfo.toNavRequest())
-            }) {
-                Text("Open map")
-            }
+            BookmarksPage(modifier = modifier)
         }
     }
 
@@ -38,6 +30,13 @@ sealed class BarNavigationItem(
         @Composable
         override fun Content(modifier: Modifier) {
             AlertsPage(modifier = modifier)
+        }
+    }
+
+    object Settings : BarNavigationItem("settings", R.string.placeholder) {
+        @Composable
+        override fun Content(modifier: Modifier) {
+            SettingsPage(modifier = modifier)
         }
     }
 

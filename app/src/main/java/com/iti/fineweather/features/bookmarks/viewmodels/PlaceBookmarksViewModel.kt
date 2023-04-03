@@ -1,22 +1,22 @@
-package com.iti.fineweather.features.alerts.viewmodels
+package com.iti.fineweather.features.bookmarks.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.utils.wrap
-import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
-import com.iti.fineweather.features.alerts.repositories.WeatherAlertsRepository
+import com.iti.fineweather.features.bookmarks.entities.PlaceBookmark
+import com.iti.fineweather.features.bookmarks.repositories.PlaceBookmarksRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: WeatherAlertsRepository): ViewModel() {
+class PlaceBookmarksViewModel @Inject constructor(private val bookmarksRepository: PlaceBookmarksRepository): ViewModel() {
 
-    val uiState: StateFlow<UiState<List<UserWeatherAlert>>> by lazy {
-        alertsRepository.weatherAlertsFlow.map { result ->
+    val uiState: StateFlow<UiState<List<PlaceBookmark>>> by lazy {
+        bookmarksRepository.placeBookmarks.map { result ->
             when (result) {
                 is Resource.Success -> UiState.Loaded(result.data)
                 is Resource.Error ->  UiState.Error(result.error)
@@ -27,28 +27,19 @@ class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: W
     private val _operationState = MutableSharedFlow<UiState<Unit>>()
     val operationState = _operationState.asSharedFlow()
 
-    fun addAlert(alert: UserWeatherAlert) {
+    fun addBookmark(bookmark: PlaceBookmark) {
         viewModelScope.launch {
             _operationState.wrap {
-                alertsRepository.addAlert(alert)
+                bookmarksRepository.addBookmark(bookmark)
             }
         }
     }
 
-    fun deleteAlert(alert: UserWeatherAlert) {
+    fun deleteBookmark(bookmark: PlaceBookmark) {
         viewModelScope.launch {
             _operationState.wrap {
-                alertsRepository.removeAlert(alert)
+                bookmarksRepository.removeBookmark(bookmark)
             }
         }
     }
-
-    fun enableAlarm(alert: UserWeatherAlert, enabled: Boolean) {
-        viewModelScope.launch {
-            _operationState.wrap {
-                alertsRepository.updateAlertAlarmEnabled(alert, enabled)
-            }
-        }
-    }
-
 }

@@ -1,7 +1,6 @@
 package com.iti.fineweather.features.map.repositories
 
 import android.location.Geocoder
-import android.os.Build
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.CancellationToken
 import com.google.android.gms.tasks.CancellationTokenSource
@@ -12,6 +11,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import com.iti.fineweather.core.helpers.Resource
+import com.iti.fineweather.features.common.utils.getAddress
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -64,23 +64,6 @@ class MapPlacesRepository @Inject constructor(
             } else {
                 continuation.resume(Resource.Error(Exception("Not found"))) // TODO: localize
             }
-        }
-    }
-
-    @Suppress("DEPRECATION")
-    private fun Geocoder.getAddress(
-        latitude: Double,
-        longitude: Double,
-        onResult: (android.location.Address?, Exception?) -> Unit
-    ) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            getFromLocation(latitude, longitude, 1) { onResult(it.firstOrNull(), null) }
-            return
-        }
-        try {
-            onResult(getFromLocation(latitude, longitude, 1)?.firstOrNull(), null)
-        } catch(e: Exception) {
-            onResult(null, e)
         }
     }
 
