@@ -39,6 +39,7 @@ android {
         }
     }
     compileOptions {
+        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
@@ -60,6 +61,7 @@ android {
 
 dependencies {
 
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$jdk_desuger_version"
 
     implementation "androidx.core:core-ktx:$core_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
@@ -93,6 +95,7 @@ dependencies {
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
     // Coil
@@ -101,9 +104,11 @@ dependencies {
 
     // Hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
+    implementation "androidx.hilt:hilt-common:$hilt_common_version"
+    implementation "androidx.hilt:hilt-work:$hilt_common_version"
+    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt "androidx.hilt:hilt-compiler:$hilt_compiler_version"
-    implementation "androidx.hilt:hilt-navigation-compose:$hilt_navigation_version"
 
     // Google maps
     implementation "com.google.maps.android:maps-compose:$google_maps_version"
@@ -114,6 +119,12 @@ dependencies {
     // Datastore
     implementation "androidx.datastore:datastore:$proto_datastore_version"
     implementation  "com.google.protobuf:protobuf-javalite:$protobuf_version"
+
+    // WorkManager
+    implementation "androidx.work:work-runtime:$work_version"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+    implementation "androidx.work:work-multiprocess:$work_version"
+    androidTestImplementation "androidx.work:work-testing:$work_version"
 
     // Timber
     implementation "com.jakewharton.timber:timber:$timber_version"

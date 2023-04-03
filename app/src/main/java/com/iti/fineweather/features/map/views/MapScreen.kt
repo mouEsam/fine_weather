@@ -61,6 +61,7 @@ fun MapScreen(
 
     CompositionScaffoldProvider {
         Scaffold(
+            modifier = Modifier.statusBarsPadding(),
             scaffoldState = LocalScaffold.current,
         ) { innerPadding ->
             val uiSettings by remember { mutableStateOf(MapUiSettings()) }
@@ -151,6 +152,7 @@ fun MapScreen(
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .navigationBarsPadding()
                             .padding(horizontal = LocalAppTheme.spaces.small),
                         onClick = {
                             navController.navigateUp()
