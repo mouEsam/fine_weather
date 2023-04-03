@@ -54,6 +54,7 @@ private val items = listOf(
     BarNavigationItem.Home,
     BarNavigationItem.Bookmarks,
     BarNavigationItem.Alerts,
+    BarNavigationItem.Settings,
 )
 
 @Composable

@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.core.helpers.UiState
+import com.iti.fineweather.core.utils.wrap
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import com.iti.fineweather.features.alerts.repositories.WeatherAlertsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,11 +25,11 @@ class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: W
     }
 
     private val _operationState = MutableSharedFlow<UiState<Unit>>()
-    val operationState = _operationState.asSharedFlow()
+    val operationState = _operationState.stateIn(viewModelScope, SharingStarted.Lazily, UiState.Initial())
 
     fun addAlert(alert: UserWeatherAlert) {
         viewModelScope.launch {
-            wrapOperation {
+            _operationState.wrap {
                 alertsRepository.addAlert(alert)
             }
         }
@@ -37,7 +37,7 @@ class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: W
 
     fun deleteAlert(alert: UserWeatherAlert) {
         viewModelScope.launch {
-            wrapOperation {
+            _operationState.wrap {
                 alertsRepository.removeAlert(alert)
             }
         }
@@ -45,20 +45,10 @@ class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: W
 
     fun enableAlarm(alert: UserWeatherAlert, enabled: Boolean) {
         viewModelScope.launch {
-            wrapOperation {
+            _operationState.wrap {
                 alertsRepository.updateAlertAlarmEnabled(alert, enabled)
             }
         }
     }
 
-    private suspend fun <T> wrapOperation(operation: suspend () -> T): UiState<T> {
-        _operationState.tryEmit(UiState.Loading())
-        return try {
-            coroutineScope {
-                UiState.Loaded(operation())
-           }
-        } catch (e: Exception) {
-            UiState.Error(e)
-        }
-    }
 }

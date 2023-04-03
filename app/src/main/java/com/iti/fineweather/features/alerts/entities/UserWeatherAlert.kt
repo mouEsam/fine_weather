@@ -19,15 +19,15 @@ enum class RepetitionType {
 )
 data class UserWeatherAlert(
     @PrimaryKey
-    var id: UUID = UUID.randomUUID(),
-    var createdAt: LocalDateTime = LocalDateTime.now(),
-    var deleteAt: LocalDateTime? = null,
-    var alarmEnabled: Boolean,
+    val id: UUID = UUID.randomUUID(),
+    val createdAt: LocalDateTime = LocalDateTime.now(),
+    val deletedAt: LocalDateTime? = null,
+    val alarmEnabled: Boolean,
     @ColumnInfo(name = "repetition_type")
-    var repetitionType: RepetitionType,
+    val repetitionType: RepetitionType,
     @ColumnInfo(name = "time")
-    var time: LocalTime,
+    val time: LocalTime,
     @ColumnInfo(name = "start_date")
-    var startDate: LocalDate,
-    var endDate: LocalDate? = null,
+    val startDate: LocalDate,
+    val endDate: LocalDate? = null,
 )

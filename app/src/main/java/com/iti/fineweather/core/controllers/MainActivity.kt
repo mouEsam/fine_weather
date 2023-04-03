@@ -24,6 +24,7 @@ import com.iti.fineweather.core.navigation.SimpleRouteInfo
 import com.iti.fineweather.core.theme.FineWeatherTheme
 import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.alerts.views.AlertsScreen
+import com.iti.fineweather.features.bookmarks.views.BookmarksScreen
 import com.iti.fineweather.features.home.views.HomeScreen
 import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.settings.views.SettingsScreen
@@ -54,6 +55,7 @@ private val routes = listOf(
     MapScreen.routeInfo,
     SettingsScreen.routeInfo,
     AlertsScreen.routeInfo,
+    BookmarksScreen.routeInfo,
 )
 
 @AndroidEntryPoint
