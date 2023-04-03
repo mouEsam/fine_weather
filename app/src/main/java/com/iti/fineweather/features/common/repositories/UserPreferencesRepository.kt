@@ -57,6 +57,28 @@ class UserPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun updateGpsLocation(location: MapPlace) {
+        withContext(dispatcher) {
+            userPreferencesStore.updateData { preferences ->
+                preferences.toBuilder()
+                    .setLocation(location)
+                    .setLocationType(LocationType.GPS)
+                    .build()
+            }
+        }
+    }
+
+    suspend fun updateMapLocation(location: MapPlace) {
+        withContext(dispatcher) {
+            userPreferencesStore.updateData { preferences ->
+                preferences.toBuilder()
+                    .setLocation(location)
+                    .setLocationType(LocationType.MAP)
+                    .build()
+            }
+        }
+    }
+
     suspend fun updateTemperatureUnit(temperatureUnit: TemperatureUnit) {
         withContext(dispatcher) {
             userPreferencesStore.updateData { preferences ->

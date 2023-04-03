@@ -13,7 +13,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.iti.fineweather.core.helpers.UiState
-import com.iti.fineweather.features.settings.viewmodels.GpsPlaceViewModel
 import com.iti.fineweather.features.settings.viewmodels.SettingsViewModel
 import timber.log.Timber
 
@@ -23,7 +22,6 @@ import timber.log.Timber
 @VisibleForTesting
 fun SettingsPage(
     modifier: Modifier = Modifier,
-    gpsPlaceViewModel: GpsPlaceViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val permissions = rememberMultiplePermissionsState(
@@ -34,25 +32,26 @@ fun SettingsPage(
     ) { permissions ->
         @SuppressLint("MissingPermission")
         if (permissions.any { p -> p.value }) {
-            gpsPlaceViewModel.getLocation()
+            settingsViewModel.updateGpsLocation()
         } else {
             // TODO: on failure
         }
     }
 
-    val placeUiState by gpsPlaceViewModel.uiState.collectAsState()
-    LaunchedEffect(key1 = placeUiState) {
-        Timber.d(placeUiState.toString())
-        when (placeUiState) {
-            is UiState.Loaded -> {
-                val location = placeUiState.data!!
-                settingsViewModel.updateLocation(location.toMapPlace())
-            }
+    val opState by settingsViewModel.operationState.collectAsState()
+    LaunchedEffect(key1 = opState) {
+        Timber.d(opState.toString())
+        when (opState) {
             is UiState.Error -> {
                 // TODO: handle error
             }
             else -> {}
         }
+    }
+
+    val settingsUiState by settingsViewModel.uiState.collectAsState()
+    LaunchedEffect(key1 = settingsUiState) {
+        Timber.d(settingsUiState.toString())
     }
 
     Button(onClick = {
