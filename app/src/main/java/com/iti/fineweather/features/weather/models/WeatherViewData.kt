@@ -2,6 +2,7 @@ package com.iti.fineweather.features.weather.models
 
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.*
@@ -39,7 +40,19 @@ enum class WeatherType(val code: Long? = null, val codeRange: LongRange? = null)
     Snow(codeRange = 600L until 700),
     Atmosphere(codeRange = 700L until 800),
     Clear(code = 800L),
-    Clouds(codeRange = 800L..810),
+    Clouds(codeRange = 800L..810),;
+
+    fun color(isDay: Boolean): Color {
+        return when (this) {
+            Clear -> if (isDay) Color(0xff99c738) else Color(0xff357eca)
+            Thunderstorm -> if (isDay) Color(0xff78936c) else Color(0xff827b84)
+            Drizzle -> if (isDay) Color(0xff93a659) else Color(0xff87629d)
+            Rain -> if (isDay) Color(0xff679198) else Color(0xff906f72)
+            Snow -> if (isDay) Color(0xff4ea6b1) else Color(0xff4a6cb5)
+            Atmosphere -> if (isDay) Color(0xffa55a5d) else Color(0xffa24eb1)
+            Clouds -> if (isDay) Color(0xff9c8a63) else Color(0xff574ab5)
+        }
+    }
 }
 
 data class WeatherState(
@@ -49,12 +62,16 @@ data class WeatherState(
     val description: String,
     val iconUrl: String,
     val iconUrlX2: String,
+
     @RawRes val dayIcon: Int,
     @RawRes val nightIcon: Int,
 ) {
     @get:RawRes
     val icon: Int
         get() = if (isDay) dayIcon else nightIcon
+
+    val color: Color
+        get() = weatherType.color(isDay)
 }
 
 data class WeatherUnitData(

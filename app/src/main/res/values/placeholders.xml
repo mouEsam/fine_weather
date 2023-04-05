@@ -7,5 +7,7 @@
     <string name="placeholder_humidity">N/A</string>
     <string name="placeholder_pressure">N/A</string>
     <string name="placeholder_day">N/A</string>
+    <string name="placeholder_time">N/A</string>
+    <string name="placeholder_description">N/A</string>
 
 </resources>
