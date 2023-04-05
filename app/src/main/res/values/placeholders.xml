@@ -1,0 +1,11 @@
+<resources>
+    <string name="placeholder_location">Your city</string>
+    <string name="placeholder_weather">N/A</string>
+    <string name="placeholder_temperature">N/A</string>
+    <string name="placeholder_wind">N/A</string>
+    <string name="placeholder_cloud">N/A</string>
+    <string name="placeholder_humidity">N/A</string>
+    <string name="placeholder_pressure">N/A</string>
+    <string name="placeholder_day">N/A</string>
+
+</resources>

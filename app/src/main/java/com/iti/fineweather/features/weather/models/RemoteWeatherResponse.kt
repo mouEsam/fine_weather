@@ -68,7 +68,10 @@ data class WeatherItem(
 )
 
 sealed class Temperature {
-    data class Average(val temp: Float): Temperature()
+    data class Average(val temp: Float): Temperature() {
+        override fun getTemp(isDay: Boolean): Float = temp
+    }
+
     data class DaySummery(
         val day: Float,
         val night: Float,
@@ -78,7 +81,11 @@ sealed class Temperature {
         val morning : Float,
         val min: Float?,
         val max: Float?,
-    ): Temperature()
+    ): Temperature() {
+        override fun getTemp(isDay: Boolean): Float = if (isDay) day else night
+    }
+
+    abstract fun getTemp(isDay: Boolean): Float
 }
 
 data class WeatherAlert(

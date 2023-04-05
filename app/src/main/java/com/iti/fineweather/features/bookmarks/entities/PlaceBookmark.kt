@@ -16,6 +16,7 @@ data class PlaceBookmark(
     val createdAt: LocalDateTime = LocalDateTime.now(),
     val deletedAt: LocalDateTime? = null,
     val name: String,
+    val city: String,
     @ColumnInfo(name = "longitude")
     val longitude: Double,
     @ColumnInfo(name = "latitude")

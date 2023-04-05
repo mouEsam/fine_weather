@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Fine Weather</string>
     <string name="placeholder">Placeholder</string>
+    <string name="home_tab_today">Today %s</string>
+    <string name="home_tab_this_week">This week</string>
+    <string name="home_tab_summery">Summery</string>
 </resources>

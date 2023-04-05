@@ -37,10 +37,11 @@ class GpsPlaceRepository @Inject constructor(
         ).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val location = task.result
-                val latlng = LatLng(location.latitude, location.longitude)
+                val latLng = LatLng(location.latitude, location.longitude)
                 geocoder.getAddress(location.latitude, location.longitude) { address, _ ->
                     val name = address?.featureName ?: ""
-                    continuation.resume(Resource.Success.Remote(MapPlaceResult(latlng, name)))
+                    val city = address?.run { subAdminArea ?: countryName ?: featureName } ?: ""
+                    continuation.resume(Resource.Success.Remote(MapPlaceResult(latLng, name, city)))
                 }
             } else if (task.isComplete) {
                 continuation.resumeWithException(task.exception!!)

@@ -23,6 +23,7 @@
                 android:name=".core.controllers.MainActivity"
                 android:exported="true"
                 android:label="@string/app_name"
+                android:configChanges="orientation"
                 android:theme="@style/Theme.FineWeather">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
