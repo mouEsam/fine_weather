@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,6 +35,17 @@ class WeatherAlertsRepository @Inject constructor(
             }
         }.flowOn(dispatcher)
 
+    suspend fun getAlert(id: UUID): Flow<Resource<UserWeatherAlert>> {
+        return weatherAlertsDAO.getById(id).map<_, Resource<UserWeatherAlert>> { alerts ->
+            Resource.Success.Local(alerts)
+        }.catch { exception ->
+            when (exception) {
+                is Exception -> emit(Resource.Error(exception))
+                else -> throw exception
+            }
+        }.flowOn(dispatcher)
+    }
+
     suspend fun addAlert(alert: UserWeatherAlert) {
         withContext(dispatcher) {
             weatherAlertsDAO.insertAll(alert)
@@ -50,10 +62,20 @@ class WeatherAlertsRepository @Inject constructor(
             weatherAlertScheduler.cancelAlert(alert)
         }
     }
+    suspend fun setExhausted(alert: UserWeatherAlert) {
+        withContext(dispatcher) {
+            if (alert.exhausted) {
+                throw Exception("Can't exhaust an already exhausted alarm") // TODO: localize
+            }
+            weatherAlertsDAO.updateAll(alert.copy(exhausted = true))
+            weatherAlertScheduler.cancelAlert(alert)
+        }
+    }
 
     suspend fun updateAlertAlarmEnabled(alert: UserWeatherAlert, alarmEnabled: Boolean) {
         withContext(dispatcher) {
             weatherAlertsDAO.updateAll(alert.copy(alarmEnabled = alarmEnabled))
         }
     }
+
 }

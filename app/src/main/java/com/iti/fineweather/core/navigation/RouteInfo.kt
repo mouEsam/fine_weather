@@ -3,6 +3,7 @@ package com.iti.fineweather.core.navigation
 import android.net.Uri
 import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.Navigator
@@ -100,6 +101,17 @@ data class RouteArgument<T>(
             dataType[bundle, name]
         }
     }
+
+    @Composable
+    fun require() = get()!!
+
+    fun get(backStackEntry: NavBackStackEntry): T? {
+        return backStackEntry.arguments?.let { bundle ->
+            dataType[bundle, name]
+        }
+    }
+
+    fun require(backStackEntry: NavBackStackEntry) = get(backStackEntry)!!
 }
 
 data class NavRequest(

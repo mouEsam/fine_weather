@@ -1,12 +1,9 @@
 package com.iti.fineweather.core.utils
 
+import android.os.Bundle
 import androidx.lifecycle.Observer
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.NavDeepLinkRequest
-import androidx.navigation.NavOptions
+import androidx.navigation.*
 import com.iti.fineweather.core.navigation.NavRequest
-import com.iti.fineweather.features.map.views.MapScreen
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -44,7 +41,7 @@ fun NavOptions.Builder.setPopUpToFirst(
 }
 
 suspend fun <T> NavBackStackEntry.getResult(key: String): T? = suspendCancellableCoroutine { continuation ->
-    val resultObservable = savedStateHandle.getLiveData<T?>(MapScreen.RESULT_KEY)
+    val resultObservable = savedStateHandle.getLiveData<T?>(key)
     val observer = object : Observer<T?> {
         override fun onChanged(value: T?) {
             resultObservable.removeObserver(this)
@@ -56,3 +53,22 @@ suspend fun <T> NavBackStackEntry.getResult(key: String): T? = suspendCancellabl
         resultObservable.removeObserver(observer)
     }
 }
+
+val NavType.Companion.DoubleType: NavType<Double>
+    get() = object : NavType<Double>(true) {
+            override val name: String
+                get() = "float"
+
+            override fun put(bundle: Bundle, key: String, value: Double) {
+                bundle.putDouble(key, value)
+            }
+
+            @Suppress("DEPRECATION")
+            override fun get(bundle: Bundle, key: String): Double {
+                return bundle[key] as Double
+            }
+
+            override fun parseValue(value: String): Double {
+                return value.toDouble()
+            }
+        }

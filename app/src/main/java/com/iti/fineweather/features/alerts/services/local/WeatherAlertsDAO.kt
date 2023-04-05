@@ -10,7 +10,7 @@ interface WeatherAlertsDAO {
     @Query("SELECT * FROM UserWeatherAlert")
     fun getAll(): Flow<List<UserWeatherAlert>>
 
-    @Query("SELECT * FROM UserWeatherAlert where deletedAt IS NULL")
+    @Query("SELECT * FROM UserWeatherAlert where deletedAt IS NULL AND exhausted == 0")
     fun getAllActive(): Flow<List<UserWeatherAlert>>
 
     @Query("SELECT * FROM UserWeatherAlert WHERE id == :id LIMIT 1")

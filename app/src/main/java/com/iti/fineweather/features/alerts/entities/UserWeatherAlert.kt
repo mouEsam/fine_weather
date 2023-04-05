@@ -30,4 +30,5 @@ data class UserWeatherAlert(
     @ColumnInfo(name = "start_date")
     val startDate: LocalDate,
     val endDate: LocalDate? = null,
+    val exhausted: Boolean = false,
 )
