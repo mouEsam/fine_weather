@@ -12,8 +12,15 @@ import com.iti.fineweather.R
 
 object AppTypography {
 
-    // TODO: fix
-    private val Montserrat = FontFamily.Default ?: getGoogleFontFamily(
+    private val googleFontProvider: GoogleFont.Provider by lazy {
+        GoogleFont.Provider(
+            providerAuthority = "com.google.android.gms.fonts",
+            providerPackage = "com.google.android.gms",
+            certificates = R.array.com_google_android_gms_fonts_certs
+        )
+    }
+
+    private val Montserrat = getGoogleFontFamily(
         name = "Montserrat",
         weights = listOf(
             FontWeight.Thin,
@@ -90,6 +97,8 @@ object AppTypography {
         labelSmall = label,
     )
 
+
+
     private fun getGoogleFontFamily(
         name: String,
         provider: GoogleFont.Provider = googleFontProvider,
@@ -103,11 +112,4 @@ object AppTypography {
         )
     }
 
-    private val googleFontProvider: GoogleFont.Provider by lazy {
-        GoogleFont.Provider(
-            providerAuthority = "com.google.android.gms.fonts",
-            providerPackage = "com.google.android.gms",
-            certificates = R.array.com_google_android_gms_fonts_certs
-        )
-    }
 }

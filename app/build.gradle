@@ -86,6 +86,7 @@ dependencies {
     implementation "androidx.activity:activity-compose:$compose_navigation_version"
     implementation "androidx.navigation:navigation-compose:$navigation_version"
     implementation "com.google.accompanist:accompanist-permissions:$accompanist_permissions_version"
+    implementation "androidx.palette:palette:$palette_version"
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:$retrofit_version"

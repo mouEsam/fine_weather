@@ -1,7 +1,9 @@
 package com.iti.fineweather.features.weather.views
 
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,7 +65,10 @@ fun WeatherScreen() {
             scaffoldState = LocalScaffold.current,
         ) { innerPadding ->
             WeatherPage(
-                modifier = Modifier.padding(innerPadding),
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .statusBarsPadding()
+                    .navigationBarsPadding(),
                 weatherLocation = weatherLocation,
             )
         }

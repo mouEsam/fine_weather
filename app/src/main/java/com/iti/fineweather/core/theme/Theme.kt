@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -39,7 +40,7 @@ fun FineWeatherTheme(
     if (!view.isInEditMode) {
         SideEffect {
             (view.context as Activity).window.also { window ->
-                window.statusBarColor = materialColorScheme.primary.toArgb()
+                window.statusBarColor = Color.Transparent.toArgb()
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
             }
         }
