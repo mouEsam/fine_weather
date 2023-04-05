@@ -1,0 +1,9 @@
+<resources>
+    <string name="temperature_kelvin">K</string>
+    <string name="temperature_celsius">°C</string>
+    <string name="temperature_fahrenheit">°F</string>
+
+    <string name="wind_speed_ms">m/s</string>
+    <string name="wind_speed_miles_hr">miles/h</string>
+    <string name="pressure_hpa">hPa</string>
+</resources>

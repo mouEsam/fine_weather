@@ -28,6 +28,12 @@ object AppTypography {
         )
     )
 
+    val headerLarge = TextStyle(
+        fontFamily = Montserrat,
+        fontSize = 84.sp,
+        fontWeight = FontWeight.W900
+    )
+
     val header = TextStyle(
         fontFamily = Montserrat,
         fontSize = 42.sp,
@@ -38,6 +44,12 @@ object AppTypography {
         fontFamily = Montserrat,
         fontSize = 22.sp,
         fontWeight = FontWeight.W700
+    )
+
+    val subtitle = TextStyle(
+        fontFamily = Montserrat,
+        fontSize = 18.sp,
+        fontWeight = FontWeight.W600
     )
 
     val action = TextStyle(

@@ -22,7 +22,7 @@ import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
-import com.iti.fineweather.core.theme.LocalAppTheme
+import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.common.views.ClearStatusBar
@@ -129,7 +129,7 @@ fun MissingLanguageDialog(
                        )
                        Text(
                            text = item.toLocalizedName(),
-                           modifier = Modifier.padding(start = LocalAppTheme.spaces.small)
+                           modifier = Modifier.padding(start = LocalTheme.spaces.small)
                        )
                    }
                 }
@@ -180,7 +180,7 @@ fun MissingLocation(
                 ) {
                     Text(text = "Map") // TODO: localize
                 }
-                Spacer(modifier = Modifier.width(LocalAppTheme.spaces.medium))
+                Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
                 Button(
                     onClick = {
                         permissions.launchMultiplePermissionRequest()

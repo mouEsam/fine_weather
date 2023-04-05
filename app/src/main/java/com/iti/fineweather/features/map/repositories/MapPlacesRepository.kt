@@ -49,6 +49,7 @@ class MapPlacesRepository @Inject constructor(
             MapPlaceResult(
                 location = it.place.latLng!!,
                 name = it.place.name!!,
+                city = it.place.name!!,
             )
         }
     )
@@ -59,7 +60,11 @@ class MapPlacesRepository @Inject constructor(
                 continuation.resume(Resource.Error(exception))
             } else if (address != null) {
                 continuation.resume(Resource.Success.Remote(
-                    MapPlaceResult(location, address.featureName)
+                    MapPlaceResult(
+                        location = location,
+                        name = address.featureName,
+                        city = address.subAdminArea ?: address.countryName ?: address.featureName,
+                    )
                 ))
             } else {
                 continuation.resume(Resource.Error(Exception("Not found"))) // TODO: localize

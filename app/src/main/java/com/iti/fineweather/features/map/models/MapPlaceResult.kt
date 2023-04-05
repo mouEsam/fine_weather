@@ -6,11 +6,13 @@ import com.iti.fineweather.features.settings.models.UserPreferences
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class MapPlaceResult(val location: LatLng, val name: String): Parcelable {
+data class MapPlaceResult(val location: LatLng, val name: String, val city: String): Parcelable {
 
     // TODO: extract mapper
     fun toMapPlace(): UserPreferences.MapPlace {
-        return UserPreferences.MapPlace.newBuilder().setName(name)
+        return UserPreferences.MapPlace.newBuilder()
+            .setName(name)
+            .setCity(city)
             .setLocation(
                 UserPreferences.MapPlace.Location.newBuilder()
                     .setLatitude(location.latitude)

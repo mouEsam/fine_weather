@@ -12,13 +12,14 @@ message UserPreferences {
 
     message MapPlace {
         string name = 1;
+        string city = 2;
 
         message Location {
             double latitude = 1;
             double longitude = 2;
         }
 
-        Location location = 2;
+        Location location = 3;
     }
     optional MapPlace location = 2;
 
@@ -30,7 +31,7 @@ message UserPreferences {
     optional TemperatureUnit temperature_unit = 3;
 
     enum WindSpeedUnit {
-        METER_HOUR = 0;
+        METER_SEC = 0;
         MILES_HOUR = 1;
     }
     optional WindSpeedUnit wind_speed_unit = 4;

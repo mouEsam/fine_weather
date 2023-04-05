@@ -28,6 +28,10 @@ object WeatherScreen : Screen<WeatherScreen.WeatherRoute> {
             name = "name",
             dataType = NavType.StringType,
         )
+        val city = RouteArgument(
+            name = "city",
+            dataType = NavType.StringType,
+        )
         val latitude = RouteArgument(
             name = "latitude",
             dataType = NavType.DoubleType,
@@ -36,7 +40,7 @@ object WeatherScreen : Screen<WeatherScreen.WeatherRoute> {
             name = "longitude",
             dataType = NavType.DoubleType,
         )
-        override val args: List<RouteArgument<*>> = listOf(name, latitude, longitude)
+        override val args: List<RouteArgument<*>> = listOf(name, city, latitude, longitude)
         override val screen: @Composable () -> Unit = @Composable {
             WeatherScreen()
         }
@@ -49,9 +53,10 @@ fun WeatherScreen() {
     val currentBackStackEntry = LocalNavigation.backStackEntry
     val weatherLocation by remember {
         val name = WeatherScreen.routeInfo.name.require(currentBackStackEntry)
+        val city = WeatherScreen.routeInfo.city.require(currentBackStackEntry)
         val latitude = WeatherScreen.routeInfo.latitude.require(currentBackStackEntry)
         val longitude = WeatherScreen.routeInfo.longitude.require(currentBackStackEntry)
-        mutableStateOf(WeatherLocation(name, latitude, longitude))
+        mutableStateOf(WeatherLocation(name, city, latitude, longitude))
     }
     CompositionScaffoldProvider {
         Scaffold(

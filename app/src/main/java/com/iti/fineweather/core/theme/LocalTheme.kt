@@ -5,7 +5,7 @@ import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
 
-object LocalAppTheme {
+object LocalTheme {
     val colors: AppColorScheme
         @Composable
         @ReadOnlyComposable

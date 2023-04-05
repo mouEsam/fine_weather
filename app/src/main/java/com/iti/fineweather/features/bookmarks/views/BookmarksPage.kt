@@ -42,6 +42,7 @@ fun BookmarksPage(
                     Timber.d("GOT $locationResult")
                     bookmarksViewModel.addBookmark(PlaceBookmark(
                         name = locationResult.name,
+                        city = locationResult.city,
                         latitude = locationResult.location.latitude,
                         longitude = locationResult.location.longitude,
                     ))

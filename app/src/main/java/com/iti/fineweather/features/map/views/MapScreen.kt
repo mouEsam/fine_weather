@@ -23,7 +23,7 @@ import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
-import com.iti.fineweather.core.theme.LocalAppTheme
+import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.viewmodels.MapPlaceViewModel
 import com.iti.fineweather.features.map.viewmodels.MapPlacesViewModel
@@ -95,9 +95,9 @@ fun MapScreen(
             ) {
                 AutoCompletePlaces(
                     mapPlaceViewModel = mapPlaceViewModel,
-                    modifier = Modifier.padding(horizontal = LocalAppTheme.spaces.small),
+                    modifier = Modifier.padding(horizontal = LocalTheme.spaces.small),
                 )
-                Spacer(modifier = Modifier.height(LocalAppTheme.spaces.small))
+                Spacer(modifier = Modifier.height(LocalTheme.spaces.small))
                 Box(
                     modifier = Modifier
                         .weight(1.0f),
@@ -148,12 +148,12 @@ fun MapScreen(
                     }
                 }
                 selectedLocation?.let { selectedLocation ->
-                    Spacer(modifier = Modifier.height(LocalAppTheme.spaces.small))
+                    Spacer(modifier = Modifier.height(LocalTheme.spaces.small))
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
                             .navigationBarsPadding()
-                            .padding(horizontal = LocalAppTheme.spaces.small),
+                            .padding(horizontal = LocalTheme.spaces.small),
                         onClick = {
                             navController.navigateUp()
                             resultLiveData.value = selectedLocation
