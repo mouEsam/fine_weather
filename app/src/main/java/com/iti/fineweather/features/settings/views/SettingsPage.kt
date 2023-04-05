@@ -1,7 +1,6 @@
 package com.iti.fineweather.features.settings.views
 
 import android.annotation.SuppressLint
-import androidx.annotation.VisibleForTesting
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +18,6 @@ import timber.log.Timber
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-@VisibleForTesting
 fun SettingsPage(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = hiltViewModel()

@@ -9,9 +9,9 @@ import com.iti.fineweather.core.utils.wrapResource
 import com.iti.fineweather.features.common.repositories.UserPreferencesRepository
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.settings.models.UserPreferences
+import com.iti.fineweather.features.settings.models.UserPreferences.LocationType
 import com.iti.fineweather.features.settings.repositories.GpsPlaceRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -32,9 +32,12 @@ class SettingsViewModel @Inject constructor(
         }.stateIn(viewModelScope, started = SharingStarted.Lazily, initialValue = UiState.Loading())
     }
 
-    private var job: Job? = null
+    private var locationWasUpdated: Boolean = false
     private val _operationState = MutableSharedFlow<UiState<Any>>()
     val operationState = _operationState.stateIn(viewModelScope, SharingStarted.Lazily, UiState.Initial())
+
+    val isLocationUpdateNeeded: Boolean
+        get() = uiState.value.data?.locationType == LocationType.GPS && !locationWasUpdated
 
     @RequiresPermission(
         anyOf = [
@@ -48,6 +51,7 @@ class SettingsViewModel @Inject constructor(
                 val locationResult = gpsPlaceRepository.getLocation()
                 if (locationResult is Resource.Success) {
                     userPreferencesRepository.updateGpsLocation(locationResult.data.toMapPlace())
+                    locationWasUpdated = true
                 }
                 Timber.d("UPDATED $locationResult")
                 locationResult

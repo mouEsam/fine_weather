@@ -40,6 +40,7 @@ sealed class BarNavigationItem(
         }
     }
 
+    @Suppress("FunctionName")
     @Composable
     abstract fun Content(modifier: Modifier)
 }
