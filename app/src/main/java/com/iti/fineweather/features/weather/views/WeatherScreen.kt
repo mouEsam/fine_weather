@@ -13,11 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
 import com.iti.fineweather.core.helpers.LocalScaffold
-import com.iti.fineweather.core.navigation.LocalNavigation
-import com.iti.fineweather.core.navigation.RouteArgument
-import com.iti.fineweather.core.navigation.RouteInfo
-import com.iti.fineweather.core.navigation.Screen
+import com.iti.fineweather.core.navigation.*
 import com.iti.fineweather.core.utils.DoubleType
+import com.iti.fineweather.features.bookmarks.entities.PlaceBookmark
 import com.iti.fineweather.features.weather.models.WeatherLocation
 
 object WeatherScreen : Screen<WeatherScreen.WeatherRoute> {
@@ -37,14 +35,26 @@ object WeatherScreen : Screen<WeatherScreen.WeatherRoute> {
         val latitude = RouteArgument(
             name = "latitude",
             dataType = NavType.DoubleType,
+            defaultValue = 0.0,
         )
         val longitude = RouteArgument(
             name = "longitude",
             dataType = NavType.DoubleType,
+            defaultValue = 0.0,
         )
         override val args: List<RouteArgument<*>> = listOf(name, city, latitude, longitude)
         override val screen: @Composable () -> Unit = @Composable {
             WeatherScreen()
+        }
+        fun toNavReq(location: PlaceBookmark): NavRequest {
+            return toNavRequest(
+                mapOf(
+                    name to location.name,
+                    city to location.city,
+                    latitude to location.latitude,
+                    longitude to location.longitude,
+                )
+            )
         }
     }
 }

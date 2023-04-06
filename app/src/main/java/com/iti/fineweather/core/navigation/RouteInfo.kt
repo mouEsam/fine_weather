@@ -7,6 +7,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavOptions
 import androidx.navigation.NavType
 import androidx.navigation.Navigator
+import timber.log.Timber
 
 interface RouteInfo {
     val path: String
@@ -55,12 +56,13 @@ interface RouteInfo {
     }
 
     fun toNavRequest(
-        args: Map<String, Any?> = mapOf(),
+        args: Map<RouteArgument<*>, Any?> = mapOf(),
         navOptions: NavOptions? = null,
         navigatorExtras: Navigator.Extras? = null
     ): NavRequest {
+        Timber.d(args.mapKeys { it.key.name }.toString())
         return NavRequest(
-            uri = toNavUri(args),
+            uri = toNavUri(args.mapKeys { it.key.name }),
             navOptions = navOptions,
             navigatorExtras = navigatorExtras,
         )
