@@ -41,6 +41,31 @@ class WeatherAlertsNotifier @Inject constructor(
         }
     }
 
+    fun notifyForNoAlerts(alertPreferences: UserWeatherAlert) {
+        if (ActivityCompat.checkSelfPermission(
+                applicationContext,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            notifyForNoAlertsImpl(alertPreferences)
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
+    private fun notifyForNoAlertsImpl(alertPreferences: UserWeatherAlert) {
+        NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
+            .setContentTitle(applicationContext.resources.getString(R.string.app_name))
+            .setContentText(applicationContext.resources.getString(R.string.alerts_no_weather_alerts))
+            .setSilent(!alertPreferences.alarmEnabled)
+            .build().also { notification ->
+                NotificationManagerCompat
+                    .from(applicationContext)
+                    .notify(alertPreferences.hashCode(), notification)
+            }
+    }
+
     @SuppressLint("InlinedApi")
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     private fun notifyForAlertImpl(
@@ -48,6 +73,7 @@ class WeatherAlertsNotifier @Inject constructor(
         alertPreferences: UserWeatherAlert,
     ) {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
+            .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(alert.event)
             .setContentText(alert.description)
             .setSilent(!alertPreferences.alarmEnabled)
@@ -64,6 +90,7 @@ class WeatherAlertsNotifier @Inject constructor(
             alertId.hashCode(),
             NotificationCompat
                 .Builder(applicationContext, CHANNEL_ID)
+                .setSmallIcon(R.mipmap.ic_launcher_round)
                 .setContentTitle(applicationContext.resources.getString(R.string.app_name))
                 .setContentText("Retrieving latest weather events") // TODO: localize
                 .setSilent(true)

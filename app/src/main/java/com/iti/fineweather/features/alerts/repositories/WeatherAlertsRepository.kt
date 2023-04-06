@@ -58,7 +58,7 @@ class WeatherAlertsRepository @Inject constructor(
             if (alert.deletedAt != null) {
                 throw Exception("Can't delete an already deleted alarm") // TODO: localize
             }
-            weatherAlertsDAO.insertAll(alert.copy(deletedAt = LocalDateTime.now()))
+            weatherAlertsDAO.updateAll(alert.copy(deletedAt = LocalDateTime.now()))
             weatherAlertScheduler.cancelAlert(alert)
         }
     }

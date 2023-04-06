@@ -1,6 +1,7 @@
 package com.iti.fineweather.features.alerts.services.local
 
 import android.content.Context
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.iti.fineweather.features.alerts.entities.RepetitionType
@@ -13,6 +14,7 @@ import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.firstOrNull
 import java.time.LocalDate
 
+@HiltWorker
 class WeatherAlertsWorker @AssistedInject constructor(
     @Assisted applicationContext: Context,
     @Assisted workerParameters: WorkerParameters,
@@ -36,11 +38,11 @@ class WeatherAlertsWorker @AssistedInject constructor(
         } catch (_: Exception) {
             return Result.retry()
         }
-        weatherData.alerts.forEach { alert ->
+        weatherData.alerts?.forEach { alert ->
             weatherAlertsNotifier.notifyForAlert(alert, alertPreferences)
-        }
+        } ?: weatherAlertsNotifier.notifyForNoAlerts(alertPreferences)
         if (
-            alertPreferences.repetitionType == RepetitionType.DAILY &&
+            alertPreferences.repetitionType == RepetitionType.SINGLE ||
             alertPreferences.endDate?.isAfter(LocalDate.now()) == false
         ) {
             weatherAlertsRepository.setExhausted(alertPreferences)

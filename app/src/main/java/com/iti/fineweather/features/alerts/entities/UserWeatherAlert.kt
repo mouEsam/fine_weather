@@ -1,9 +1,11 @@
 package com.iti.fineweather.features.alerts.entities
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.iti.fineweather.R
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -11,12 +13,19 @@ import java.util.*
 
 enum class RepetitionType {
     SINGLE,
-    DAILY,
+    DAILY;
+
+    @Composable
+    fun toLocalizedName(): String {
+        return when (this) {
+            // TODO: localize
+            RepetitionType.SINGLE -> stringResource(R.string.alerts_repetition_type_once)
+            RepetitionType.DAILY -> stringResource(R.string.alerts_repetition_type_daily)
+        }
+    }
 }
 
-@Entity(
-    indices = [Index(value = ["repetition_type", "time", "start_date"], unique = true)]
-)
+@Entity
 data class UserWeatherAlert(
     @PrimaryKey
     val id: UUID = UUID.randomUUID(),

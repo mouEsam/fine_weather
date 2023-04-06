@@ -408,7 +408,7 @@ fun getCurrentDate(timeZone: TimeZone): String {
 
 @Composable
 fun getCurrentTimeText(timeZone: TimeZone): String {
-    val timeFormatter = rememberLocalizedDateTimeFormatter("HH:mm:ss a")
+    val timeFormatter = rememberLocalizedDateTimeFormatter("hh:mm:ss a")
     val lifecycleOwner = LocalLifecycleOwner.current
     var now by remember { mutableStateOf(ZonedDateTime.now(timeZone.toZoneId())) }
     LaunchedEffect(key1 = timeZone) {
@@ -428,7 +428,7 @@ fun HourlyWeather(
     weatherData: SortedMap<LocalTime, WeatherData>?,
     weatherUnitData: WeatherUnitData?,
 ) {
-    val timeFormatter = rememberLocalizedDateTimeFormatter("HH:mm a")
+    val timeFormatter = rememberLocalizedDateTimeFormatter("hh:mm a")
     val items = remember(key1 = weatherData) { weatherData?.entries?.toList() }
     LazyRow(
         contentPadding = PaddingValues(horizontal = LocalTheme.spaces.large),
