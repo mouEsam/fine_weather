@@ -5,6 +5,7 @@ import com.iti.fineweather.core.helpers.UiState
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.channelFlow
+import timber.log.Timber
 
 suspend fun <T> MutableSharedFlow<UiState<T>>.wrapResource(operation: suspend () -> Resource<out T>) {
     tryEmit(UiState.Loading())
@@ -22,6 +23,7 @@ suspend fun <T> MutableSharedFlow<UiState<T>>.wrap(operation: suspend () -> T): 
             UiState.Loaded(operation())
         }
     } catch (e: Exception) {
+        Timber.e(e)
         UiState.Error(e)
     }
 }
@@ -33,6 +35,7 @@ suspend fun <T> (suspend () -> T).wrap() = channelFlow {
             trySend(UiState.Loaded(invoke()))
         }
     } catch (e: Exception) {
+        Timber.e(e)
         trySend(UiState.Error(e))
     }
     close()

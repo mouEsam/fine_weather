@@ -6,7 +6,6 @@ import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -25,6 +24,7 @@ import com.iti.fineweather.core.navigation.Screen
 import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.features.common.views.AppRadioButton
 import com.iti.fineweather.features.common.views.ClearStatusBar
 import com.iti.fineweather.features.home.views.HomeScreen
 import com.iti.fineweather.features.map.models.MapPlaceResult
@@ -116,22 +116,14 @@ fun MissingLanguageDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 listOf(Language.ARABIC, Language.ENGLISH).forEach { item ->
-                   Row(
-                       verticalAlignment = Alignment.CenterVertically,
-                   ) {
-                       RadioButton(
-                           selected = language == item,
-                           onClick = {
-                               language = item
-                               configs.setLocale(item.toLocale())
-                           },
-                           colors = RadioButtonDefaults.colors(MaterialTheme.colors.primary),
-                       )
-                       Text(
-                           text = item.toLocalizedName(),
-                           modifier = Modifier.padding(start = LocalTheme.spaces.small)
-                       )
-                   }
+                    AppRadioButton(
+                        title = item.toLocalizedName(),
+                        selected = language == item,
+                        onSelected = {
+                            language = item
+                            configs.setLocale(item.toLocale())
+                        }
+                    )
                 }
             }
         },

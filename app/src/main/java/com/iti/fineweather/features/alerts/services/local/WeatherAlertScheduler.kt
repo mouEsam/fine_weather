@@ -5,7 +5,8 @@ import androidx.work.*
 import com.iti.fineweather.features.alerts.entities.RepetitionType
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import dagger.hilt.android.qualifiers.ApplicationContext
-import java.time.ZoneId
+import java.time.Duration
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -54,12 +55,11 @@ class WeatherAlertScheduler @Inject constructor(
         alert: UserWeatherAlert, request: B
     ): W {
         val startDateTime = alert.startDate.atTime(alert.time)
+        val delay = Duration.between(startDateTime, LocalDateTime.now())
         return request.setId(alert.id).setConstraints(
                 Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
-            ).setScheduleRequestedAt(
-                scheduleRequestedAt = startDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli(),
-                timeUnit = TimeUnit.MILLISECONDS,
-            ).build()
+            )
+            .setInitialDelay(delay).build()
     }
 
 }

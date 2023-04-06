@@ -4,4 +4,21 @@
     <string name="home_tab_today">Today %s</string>
     <string name="home_tab_this_week">This week</string>
     <string name="home_tab_summery">Summery</string>
+    <string name="alerts_no_weather_alerts">It seems like you don\'t have any weather alerts for the foreseeable future.</string>
+    <string name="alerts_title">Weather Alerts</string>
+    <string name="alerts_empty">It seems like you don\'t have any alerts scheduled for the foreseeable future.</string>
+    <string name="alerts_add_alert">Add Alert</string>
+    <string name="alerts_add_submit">Save Alert</string>
+    <string name="alerts_alert_unspecified">Unspecified</string>
+    <string name="alerts_alert_type">Alert type</string>
+    <string name="alerts_alert_type_notification">Notification</string>
+    <string name="alerts_alert_type_alarm">Alarm</string>
+    <string name="alerts_repetition_type">Repetition type</string>
+    <string name="alerts_repetition_type_daily">Daily</string>
+    <string name="alerts_repetition_type_once">Once</string>
+    <string name="alerts_time">Alert time</string>
+    <string name="alerts_start_date">Start date</string>
+    <string name="alerts_end_date">End date</string>
+    <string name="alerts_delete_prompt_title">Delete alert</string>
+    <string name="alerts_delete_prompt_message">Are you sure you want to delete this alert ?</string>
 </resources>

@@ -1,0 +1,9 @@
+<resources>
+    <string name="error_unknown">An unexpected error occurred.</string>
+    <string name="error_date_end_before_start">End date must be after start date.</string>
+    <string name="error_submit_before_add">You must add an alert first before saving it.</string>
+    <string name="error_submit_before_modify">You must add an alert first before modifying it.</string>
+    <string name="error_missing_value">%s is required.</string>
+
+
+</resources>

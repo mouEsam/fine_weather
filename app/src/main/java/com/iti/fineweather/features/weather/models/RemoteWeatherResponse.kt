@@ -16,7 +16,7 @@ data class RemoteWeatherResponse(
     val hourlyWeather: List<RemoteWeatherData>,
     @SerializedName("daily")
     val dailyWeather: List<RemoteWeatherData>,
-    val alerts: List<WeatherAlert> = listOf(),
+    val alerts: List<WeatherAlert>?,
 )
 
 data class RemoteWeatherData(
