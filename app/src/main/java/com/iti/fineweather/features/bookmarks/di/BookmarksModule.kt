@@ -7,6 +7,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import net.iakovlev.timeshape.TimeZoneEngine
 import javax.inject.Singleton
 
 @Module
@@ -17,4 +18,6 @@ object BookmarksModule {
     fun provideBookmarksDAO(appDatabase: AppDatabase): PlaceBookmarksDAO {
         return appDatabase.placeBookmarksDao()
     }
+
+
 }

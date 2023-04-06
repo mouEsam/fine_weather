@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import net.iakovlev.timeshape.TimeZoneEngine
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.converter.gson.GsonConverterFactory
@@ -62,5 +63,11 @@ object AppModule {
     @Singleton
     fun provideCoroutineScope(@IODispatcher dispatcher: CoroutineDispatcher): CoroutineScope {
         return CoroutineScope(dispatcher + SupervisorJob())
+    }
+
+    @Provides
+    @Singleton
+    fun timeZoneEngine(): TimeZoneEngine {
+        return TimeZoneEngine.initialize()
     }
 }

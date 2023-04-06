@@ -55,9 +55,9 @@ suspend fun <T> NavBackStackEntry.getResult(key: String): T? = suspendCancellabl
 }
 
 val NavType.Companion.DoubleType: NavType<Double>
-    get() = object : NavType<Double>(true) {
+    get() = object : NavType<Double>(false) {
             override val name: String
-                get() = "float"
+                get() = "double"
 
             override fun put(bundle: Bundle, key: String, value: Double) {
                 bundle.putDouble(key, value)

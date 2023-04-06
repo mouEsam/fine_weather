@@ -43,7 +43,7 @@ class PlaceBookmarksRepository @Inject constructor(
             if (bookmark.deletedAt != null) {
                 throw Exception("Can't delete an already deleted alarm") // TODO: localize
             }
-            placeBookmarksDAO.insertAll(bookmark.copy(deletedAt = LocalDateTime.now()))
+            placeBookmarksDAO.updateAll(bookmark.copy(deletedAt = LocalDateTime.now()))
         }
     }
 
