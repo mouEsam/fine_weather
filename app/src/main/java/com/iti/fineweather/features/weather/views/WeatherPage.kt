@@ -406,12 +406,12 @@ fun WeatherDescription(
         ) {
             Text(
                 text = weatherData?.let { dayFormatter.format(now) } ?: stringResource(R.string.placeholder_day),
-                style = LocalTheme.typography.label,
+                style = LocalTheme.typography.bodyBold,
             )
             Text(
                 text = weatherData?.let { getCurrentTimeText(it.timezone) }
                     ?: stringResource(R.string.placeholder_time),
-                style = LocalTheme.typography.label,
+                style = LocalTheme.typography.body,
             )
             WeatherIcon(
                 modifier = Modifier.weight(1.0f),
@@ -423,7 +423,7 @@ fun WeatherDescription(
             )
             Text(
                 text = weatherData?.now?.weatherState?.description ?: stringResource(R.string.placeholder_description),
-                style = LocalTheme.typography.bodyBold,
+                style = LocalTheme.typography.actionBold,
                 textAlign = TextAlign.Center,
             )
         }
