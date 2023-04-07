@@ -2,7 +2,7 @@ package com.iti.fineweather.features.map.views
 
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -61,8 +61,9 @@ fun MapScreen(
 
     CompositionScaffoldProvider {
         Scaffold(
-            modifier = Modifier.statusBarsPadding(),
-            scaffoldState = LocalScaffold.current,
+            containerColor = LocalTheme.colors.main,
+            contentColor = LocalTheme.colors.mainContent,
+            snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
         ) { innerPadding ->
             val uiSettings by remember { mutableStateOf(MapUiSettings()) }
             val properties by remember {
@@ -92,6 +93,7 @@ fun MapScreen(
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
+                    .statusBarsPadding()
             ) {
                 AutoCompletePlaces(
                     mapPlaceViewModel = mapPlaceViewModel,
@@ -149,7 +151,7 @@ fun MapScreen(
                 }
                 selectedLocation?.let { selectedLocation ->
                     Spacer(modifier = Modifier.height(LocalTheme.spaces.small))
-                    Button(
+                    ElevatedButton(
                         modifier = Modifier
                             .fillMaxWidth()
                             .navigationBarsPadding()
@@ -168,7 +170,7 @@ fun MapScreen(
 }
 
 @Composable
-@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @VisibleForTesting
 fun AutoCompletePlaces(
     mapPlaceViewModel: MapPlaceViewModel,
@@ -185,7 +187,7 @@ fun AutoCompletePlaces(
     ExposedDropdownMenuBox(
         expanded = exp,
         onExpandedChange = {},
-        modifier =  modifier,
+        modifier = modifier,
     ) {
         TextField(
             value = textInput,
@@ -198,10 +200,7 @@ fun AutoCompletePlaces(
             label = { Text("Search") }, // TODO: localize
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
-                    expanded = exp,
-                    onIconClick = {
-                        exp = !exp
-                    }
+                    expanded = exp
                 )
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
@@ -220,6 +219,7 @@ fun AutoCompletePlaces(
                     uiState.data!!.forEach { option ->
                         val label = option.getPrimaryText(null).toString()
                         DropdownMenuItem(
+                            text = { Text(text = label) },
                             onClick = {
                                 selectedOption = option
                                 textInput = label
@@ -229,11 +229,10 @@ fun AutoCompletePlaces(
                                 mapPlaceViewModel.getPlace(option)
                                 exp = false
                             }
-                        ) {
-                            Text(text = label)
-                        }
+                        )
                     }
                 }
+
                 is UiState.Loading -> {
                 }
             }

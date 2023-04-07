@@ -67,6 +67,10 @@ class WeatherViewModel @Inject constructor(
     }
 
 
+    fun refetchData() {
+        location?.let(::getWeatherData)
+    }
+
     fun getWeatherData(weatherLocation: WeatherLocation? = null) {
         job?.cancel()
         job = viewModelScope.launch {

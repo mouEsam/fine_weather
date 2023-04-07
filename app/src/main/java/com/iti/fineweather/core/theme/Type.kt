@@ -37,7 +37,7 @@ object AppTypography {
 
     val headerLarge = TextStyle(
         fontFamily = Montserrat,
-        fontSize = 84.sp,
+        fontSize = 76.sp,
         fontWeight = FontWeight.W900
     )
 
@@ -65,10 +65,10 @@ object AppTypography {
         fontWeight = FontWeight.W600
     )
 
-    val labelBold = TextStyle(
+    val actionBold = TextStyle(
         fontFamily = Montserrat,
         fontSize = 16.sp,
-        fontWeight = FontWeight.W600
+        fontWeight = FontWeight.W800
     )
 
     val bodyBold = TextStyle(
@@ -89,11 +89,17 @@ object AppTypography {
         fontWeight = FontWeight.W400
     )
 
+    val labelBold = TextStyle(
+        fontFamily = Montserrat,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.W600
+    )
+
     fun mapToMaterialTypography() = Typography(
         bodyLarge = bodyBold,
         bodyMedium = body,
         titleLarge = title,
-        labelLarge = labelBold,
+        labelLarge = action,
         labelSmall = label,
     )
 
