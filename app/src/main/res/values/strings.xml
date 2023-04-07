@@ -1,9 +1,11 @@
 <resources>
     <string name="app_name">Fine Weather</string>
     <string name="placeholder">Placeholder</string>
+<!--  Home  -->
     <string name="home_tab_today">Today %s</string>
     <string name="home_tab_this_week">This week</string>
     <string name="home_tab_summery">Summery</string>
+<!--  Alerts  -->
     <string name="alerts_no_weather_alerts">It seems like you don\'t have any weather alerts for the foreseeable future.</string>
     <string name="alerts_title">Weather Alerts</string>
     <string name="alerts_empty">It seems like you don\'t have any alerts scheduled for the foreseeable future.</string>
@@ -21,10 +23,26 @@
     <string name="alerts_end_date">End date</string>
     <string name="alerts_delete_prompt_title">Delete alert</string>
     <string name="alerts_delete_prompt_message">Are you sure you want to delete this alert ?</string>
+<!--  Bookmarks  -->
     <string name="bookmarks_title">Bookmarked Places</string>
     <string name="bookmarks_empty">It seems like you don\'t have any place bookmarked.</string>
     <string name="bookmarks_loading_timezone">Loading timezone data</string>
     <string name="bookmarks_add_bookmark">Add Place</string>
     <string name="bookmarks_delete_prompt_title">Delete bookmark</string>
     <string name="bookmarks_delete_prompt_message">Are you sure you want to delete this bookmark ?</string>
+<!--  Settings  -->
+    <string name="settings_title">Preferences</string>
+    <string name="settings_location_source">Location source</string>
+    <string name="settings_location_source_map">Map</string>
+    <string name="settings_location_source_gps">GPS</string>
+    <string name="settings_temperature_unit">Temperature unit</string>
+    <string name="settings_temperature_unit_kelvin">Kelvin (K)</string>
+    <string name="settings_temperature_unit_celsius">Celsius (°C)</string>
+    <string name="settings_temperature_unit_fahrenheit">Fahrenheit (°F)</string>
+    <string name="settings_wind_speed_unit">Wind speed unit</string>
+    <string name="settings_wind_speed_unit_meter_s">Meters/Sec</string>
+    <string name="settings_wind_speed_unit_miles_hr">Miles/Hr</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_ar">اللغة العربية</string>
+    <string name="settings_language_en">English</string>
 </resources>

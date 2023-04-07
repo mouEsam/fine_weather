@@ -1,10 +1,9 @@
 package com.iti.fineweather.features.home.views
 
 import androidx.annotation.VisibleForTesting
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
@@ -30,13 +29,11 @@ object HomeScreen: Screen<HomeScreen.HomeRoute> {
 fun HomeScreen() {
     CompositionScaffoldProvider {
         Scaffold(
-            scaffoldState = LocalScaffold.current,
+            snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
         ) { innerPadding ->
             WeatherPage(
                 modifier = Modifier
-                    .padding(innerPadding)
-                    .statusBarsPadding()
-                    .navigationBarsPadding(),
+                    .padding(innerPadding),
             )
         }
     }

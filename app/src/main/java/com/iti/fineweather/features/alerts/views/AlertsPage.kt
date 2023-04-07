@@ -8,9 +8,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -476,7 +473,7 @@ fun NewAlertForm(
                 if (error != null) {
                     Text(
                         text = error.error,
-                        color = MaterialTheme.colors.error,
+                        color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.weight(1.0f),
                     )
                 } else {
@@ -653,7 +650,7 @@ fun NoAlerts(
     ) {
         Text(
             text = stringResource(R.string.alerts_empty),
-            style = LocalTheme.typography.labelBold,
+            style = LocalTheme.typography.action,
             textAlign = TextAlign.Center,
         )
         ElevatedButton(

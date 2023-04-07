@@ -1,25 +1,24 @@
 package com.iti.fineweather.core.helpers
 
-import androidx.compose.material.ScaffoldState
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.*
 
 object LocalScaffold {
-    val current: ScaffoldState
+    val snackbarHost: SnackbarHostState
         @Composable
         @ReadOnlyComposable
         get() = LocalScaffoldState.current
 }
 
-private val LocalScaffoldState: ProvidableCompositionLocal<ScaffoldState> = compositionLocalOf { error("not provided") }
+private val LocalScaffoldState: ProvidableCompositionLocal<SnackbarHostState> = compositionLocalOf { error("not provided") }
 
 @Composable
 fun CompositionScaffoldProvider(
-    scaffoldState: ScaffoldState = rememberScaffoldState(),
+    snackbarHost: SnackbarHostState = remember { SnackbarHostState() },
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalScaffoldState provides scaffoldState,
+        LocalScaffoldState provides snackbarHost,
         content = content,
     )
 }

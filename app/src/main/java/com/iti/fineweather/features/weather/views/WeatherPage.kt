@@ -8,10 +8,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -34,10 +34,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
+import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
@@ -51,6 +51,7 @@ import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.alerts.views.AlertsScreen
 import com.iti.fineweather.features.bookmarks.views.BookmarksScreen
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
+import com.iti.fineweather.features.common.views.BackButton
 import com.iti.fineweather.features.settings.views.SettingsScreen
 import com.iti.fineweather.features.weather.models.*
 import com.iti.fineweather.features.weather.viewmodels.WeatherViewModel
@@ -63,11 +64,13 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.util.*
+import androidx.palette.graphics.Target as ColorTarget
 
 
 @Composable
 fun WeatherPage(
     modifier: Modifier = Modifier,
+    showControls: Boolean = true,
     weatherLocation: WeatherLocation? = null,
     weatherViewModel: WeatherViewModel = hiltViewModel(key = weatherLocation?.toString())
 ) {
@@ -84,28 +87,28 @@ fun WeatherPage(
 
     WeatherContent(
         modifier = modifier,
+        showControls = showControls,
+        weatherViewModel = weatherViewModel,
         weatherViewDataState = uiState,
     )
-}
-
-
-@Preview
-@Composable
-fun PreviewWeatherContent() {
-    WeatherContent()
 }
 
 @Composable
 fun WeatherContent(
     modifier: Modifier = Modifier,
+    showControls: Boolean,
+    weatherViewModel: WeatherViewModel,
     weatherViewDataState: UiState<WeatherViewData> = UiState.Initial(),
 ) {
     val navController = LocalNavigation.navController
     val weatherViewData = weatherViewDataState.data
     val color = weatherViewDataState.data?.now?.weatherState?.color ?: LocalTheme.colors.main
-    val colorPalette = getColorPalette(color)
-    val backgroundColor = Color(colorPalette.dominantSwatch?.rgb!!)
-    val foregroundColor = Color(colorPalette.dominantSwatch?.bodyTextColor!!)
+    val colorSwatch = getColorPalette(
+        color = color,
+        preferLight = weatherViewData?.now?.weatherState?.isDay != false,
+    )
+    val backgroundColor = colorSwatch?.rgb?.let { Color(it) } ?: color
+    val foregroundColor = colorSwatch?.bodyTextColor?.let { Color(it) } ?: LocalTheme.colors.mainContent
     Surface(
         color = Color.Unspecified,
         contentColor = backgroundColor,
@@ -128,7 +131,7 @@ fun WeatherContent(
                 contentColor = foregroundColor,
             ) {
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().weight(1.0f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Row(
@@ -140,10 +143,14 @@ fun WeatherContent(
                         ),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        if (!showControls) {
+                            BackButton()
+                        }
                         Row(
                             modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
                             verticalAlignment = Alignment.Top,
                         ) {
+
                             Icon(
                                 imageVector = Icons.Rounded.LocationOn, contentDescription = null
                             )
@@ -153,36 +160,50 @@ fun WeatherContent(
                                 modifier = Modifier.weight(1.0f),
                                 style = LocalTheme.typography.title,
                             )
-
                         }
                         if (weatherViewDataState is UiState.Loading) {
-                            CircularProgressIndicator()
+                            CircularProgressIndicator(
+                                color = foregroundColor,
+                            )
                         } else if (weatherViewDataState is UiState.Error) {
-                            Icon(
-                                imageVector = Icons.Outlined.ErrorOutline, contentDescription = null
+                            IconButton(
+                                onClick = {
+                                    weatherViewModel.refetchData()
+                                },
+                                content = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.ErrorOutline,
+                                        contentDescription = null,
+                                    )
+                                }
                             )
                         }
                         Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
-                        IconButton(onClick = {
-                            navController.navigate(SettingsScreen.routeInfo.toNavRequest())
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Settings, contentDescription = null
-                            )
-                        }
-                        IconButton(onClick = {
-                            navController.navigate(BookmarksScreen.routeInfo.toNavRequest())
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.Bookmark, contentDescription = null
-                            )
-                        }
-                        IconButton(onClick = {
-                            navController.navigate(AlertsScreen.routeInfo.toNavRequest())
-                        }) {
-                            Icon(
-                                imageVector = Icons.Outlined.CrisisAlert, contentDescription = null
-                            )
+                        if (showControls) {
+                            IconButton(onClick = {
+                                navController.navigate(SettingsScreen.routeInfo.toNavRequest())
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Settings,
+                                    contentDescription = null,
+                                )
+                            }
+                            IconButton(onClick = {
+                                navController.navigate(BookmarksScreen.routeInfo.toNavRequest())
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Bookmark,
+                                    contentDescription = null,
+                                )
+                            }
+                            IconButton(onClick = {
+                                navController.navigate(AlertsScreen.routeInfo.toNavRequest())
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.CrisisAlert,
+                                    contentDescription = null,
+                                )
+                            }
                         }
                     }
 
@@ -216,7 +237,7 @@ fun WeatherContent(
                     Image(
                         painter = painter,
                         contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(0.6f),
+                        modifier = Modifier.fillMaxWidth(0.5f),
                     )
 
                     Text(
@@ -229,14 +250,15 @@ fun WeatherContent(
                         temp = weatherViewData?.now?.temperature,
                         units = weatherViewData?.units,
                     )
+
+                    WeatherParamRow(
+                        weatherData = weatherViewData?.now,
+                        weatherUnitData = weatherViewData?.units,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = LocalTheme.spaces.xxLarge),
+                        style = LocalTheme.typography.action
+                    )
                 }
             }
-
-            WeatherParamRow(
-                weatherData = weatherViewData?.now,
-                weatherUnitData = weatherViewData?.units,
-                modifier = Modifier.fillMaxWidth().padding(horizontal = LocalTheme.spaces.xxLarge),
-            )
 
             Column(
                 modifier = Modifier.fillMaxWidth().padding(vertical = LocalTheme.spaces.medium),
@@ -278,7 +300,7 @@ fun WeatherContent(
                         }.using(
                             SizeTransform(clip = false)
                         )
-                    }, modifier = Modifier.padding(bottom = LocalTheme.spaces.large)
+                    }, modifier = Modifier.padding(bottom = LocalTheme.spaces.small)
                 ) { currentSelected ->
                     when (currentSelected) {
                         0 -> HourlyWeather(
@@ -305,7 +327,10 @@ fun WeatherContent(
 }
 
 @Composable
-fun getColorPalette(color: Color): Palette {
+fun getColorPalette(
+    color: Color,
+    preferLight: Boolean,
+): Swatch? {
     val color by rememberUpdatedState(color)
     val bitmap by remember {
         derivedStateOf {
@@ -320,69 +345,26 @@ fun getColorPalette(color: Color): Palette {
             Palette.from(bitmap).generate()
         }
     }
-    return palette
-}
-
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun WeatherParamRow(
-    weatherData: WeatherData?,
-    weatherUnitData: WeatherUnitData?,
-    maxInRow: Int = Int.MAX_VALUE,
-    modifier: Modifier = Modifier,
-) {
-    FlowRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(
-            space = LocalTheme.spaces.large,
-            alignment = Alignment.CenterHorizontally,
-        ),
-        maxItemsInEachRow = maxInRow,
-    ) {
-        WeatherParam(
-            value = if (weatherData != null) "${weatherData.windSpeed} ${
-                stringResource(weatherUnitData!!.speed)
-            }" else stringResource(R.string.placeholder_wind),
-            image = Icons.Outlined.Air,
-        )
-        WeatherParam(
-            value = if (weatherData != null) "${weatherData.clouds} %"
-            else stringResource(R.string.placeholder_cloud),
-            image = Icons.Outlined.Cloud,
-        )
-        WeatherParam(
-            value = if (weatherData != null) "${weatherData.humidity} %"
-            else stringResource(R.string.placeholder_humidity),
-            image = Icons.Outlined.WaterDrop,
-        )
-        WeatherParam(
-            value = if (weatherData != null) "${weatherData.pressure} ${
-                stringResource(weatherUnitData!!.pressure)
-            }" else stringResource(R.string.placeholder_pressure),
-            image = Icons.Outlined.Compress,
-        )
+    val targets = if (preferLight) listOf(
+        ColorTarget.LIGHT_VIBRANT,
+        ColorTarget.LIGHT_MUTED,
+        ColorTarget.VIBRANT,
+        ColorTarget.MUTED,
+        ColorTarget.DARK_VIBRANT,
+        ColorTarget.DARK_MUTED,
+    ) else listOf(
+        ColorTarget.DARK_VIBRANT,
+        ColorTarget.DARK_MUTED,
+        ColorTarget.VIBRANT,
+        ColorTarget.MUTED,
+        ColorTarget.LIGHT_VIBRANT,
+        ColorTarget.LIGHT_MUTED,
+    )
+    for (target in targets) {
+        val swatch = palette.getSwatchForTarget(target)
+        if (swatch != null) return swatch
     }
-}
-
-@Composable
-fun WeatherParam(
-    value: String,
-    image: ImageVector,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(
-            space = LocalTheme.spaces.small,
-            alignment = Alignment.CenterHorizontally,
-        )
-    ) {
-        Icon(
-            imageVector = image, contentDescription = null
-        )
-        Text(
-            text = value,
-            style = LocalTheme.typography.label,
-        )
-    }
+    return null;
 }
 
 @Composable
@@ -555,6 +537,7 @@ fun WeatherSummery(
                 style = LocalTheme.typography.label,
             )
             WeatherIcon(
+                modifier = Modifier.size(LocalTheme.spaces.xxxxLarge),
                 icon = weatherData?.weatherState?.iconUrlX2
             )
             TemperatureView(
@@ -567,9 +550,79 @@ fun WeatherSummery(
                     weatherData = weatherData,
                     weatherUnitData = weatherUnitData,
                     maxInRow = 2,
+                    style = LocalTheme.typography.labelBold
                 )
             }
         }
+    }
+}
+
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun WeatherParamRow(
+    modifier: Modifier = Modifier,
+    weatherData: WeatherData?,
+    weatherUnitData: WeatherUnitData?,
+    maxInRow: Int = Int.MAX_VALUE,
+    style: TextStyle = LocalTheme.typography.labelBold,
+) {
+    FlowRow(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(
+            space = LocalTheme.spaces.large,
+            alignment = Alignment.CenterHorizontally,
+        ),
+        maxItemsInEachRow = maxInRow,
+    ) {
+        WeatherParam(
+            value = if (weatherData != null) "${weatherData.windSpeed} ${
+                stringResource(weatherUnitData!!.speed)
+            }" else stringResource(R.string.placeholder_wind),
+            image = Icons.Outlined.Air,
+            style = style,
+        )
+        WeatherParam(
+            value = if (weatherData != null) "${weatherData.clouds} %"
+            else stringResource(R.string.placeholder_cloud),
+            image = Icons.Outlined.Cloud,
+            style = style,
+        )
+        WeatherParam(
+            value = if (weatherData != null) "${weatherData.humidity} %"
+            else stringResource(R.string.placeholder_humidity),
+            image = Icons.Outlined.WaterDrop,
+            style = style,
+        )
+        WeatherParam(
+            value = if (weatherData != null) "${weatherData.pressure} ${
+                stringResource(weatherUnitData!!.pressure)
+            }" else stringResource(R.string.placeholder_pressure),
+            image = Icons.Outlined.Compress,
+            style = style,
+        )
+    }
+}
+
+@Composable
+fun WeatherParam(
+    value: String,
+    image: ImageVector,
+    style: TextStyle,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(
+            space = LocalTheme.spaces.small,
+            alignment = Alignment.CenterHorizontally,
+        )
+    ) {
+        Icon(
+            imageVector = image, contentDescription = null
+        )
+        Text(
+            text = value,
+            style = style,
+        )
     }
 }
 

@@ -32,13 +32,13 @@ class MainActivity : ComponentActivity() {
             FineWeatherTheme {
                 AppNavigation(
                     routes = listOf(
-                        BookmarksScreen.routeInfo,
                         SplashScreen.routeInfo,
-                        AlertsScreen.routeInfo,
                         HomeScreen.routeInfo,
+                        SettingsScreen.routeInfo,
+                        BookmarksScreen.routeInfo,
+                        AlertsScreen.routeInfo,
                         WeatherScreen.routeInfo,
                         MapScreen.routeInfo,
-                        SettingsScreen.routeInfo,
                     )
                 )
             }

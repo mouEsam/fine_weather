@@ -1,10 +1,11 @@
 package com.iti.fineweather.features.splash.views
 
 import android.Manifest
+import android.R
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -92,7 +93,9 @@ fun SplashScreen(
     ClearStatusBar {
         CompositionScaffoldProvider {
             Scaffold(
-                scaffoldState = LocalScaffold.current,
+                snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
+                containerColor = LocalTheme.colors.main,
+                contentColor = LocalTheme.colors.mainContent,
             ) { innerPadding ->
                 Column(modifier = Modifier.padding(innerPadding)) { }
             }
@@ -134,7 +137,7 @@ fun MissingLanguageDialog(
                     language?.let { language -> settingsViewModel.updateLanguage(language) }
                 },
             ) {
-                Text(text = stringResource(id = android.R.string.ok))
+                Text(text = stringResource(id = R.string.ok))
             }
         },
     )
@@ -148,7 +151,7 @@ fun MissingLocation(
     permissions: MultiplePermissionsState
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    val currentStackEntry = LocalNavigation.backStackEntry;
+    val currentStackEntry = LocalNavigation.backStackEntry
     val navController = LocalNavigation.navController
     AlertDialog(
         onDismissRequest = {},

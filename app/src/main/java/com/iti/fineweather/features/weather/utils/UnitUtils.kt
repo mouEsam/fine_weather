@@ -2,6 +2,7 @@ package com.iti.fineweather.features.weather.utils
 
 import androidx.annotation.StringRes
 import com.iti.fineweather.R
+import com.iti.fineweather.features.common.utils.round
 import com.iti.fineweather.features.settings.models.UserPreferences
 import com.iti.fineweather.features.weather.helpers.Constants
 import com.iti.fineweather.features.weather.models.Temperature
@@ -34,7 +35,7 @@ fun UserPreferences.WindSpeedUnit.convert(speed: Float): Float {
         UserPreferences.WindSpeedUnit.METER_SEC,
         UserPreferences.WindSpeedUnit.UNRECOGNIZED-> speed
         UserPreferences.WindSpeedUnit.MILES_HOUR -> speed * Constants.MILES_HOUR_IN_M_SEC
-    }
+    }.round(Constants.DECIMAL_PLACES)
 }
 
 fun UserPreferences.TemperatureUnit.convert(temp: Temperature): Temperature {
@@ -58,5 +59,5 @@ private fun UserPreferences.TemperatureUnit.convert(temp: Float): Float {
         UserPreferences.TemperatureUnit.UNRECOGNIZED -> (temp - Constants.ZERO_KELVIN_CELSIUS)
 
         UserPreferences.TemperatureUnit.FAHRENHEIT -> (temp - Constants.ZERO_KELVIN_CELSIUS) * (9.0f / 5.0f + 32.0f)
-    }
+    }.round(Constants.DECIMAL_PLACES)
 }
