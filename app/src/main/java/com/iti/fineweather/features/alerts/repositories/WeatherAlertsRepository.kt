@@ -1,6 +1,8 @@
 package com.iti.fineweather.features.alerts.repositories
 
+import com.iti.fineweather.R
 import com.iti.fineweather.core.di.IODispatcher
+import com.iti.fineweather.core.helpers.InvalidStateException
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import com.iti.fineweather.features.alerts.services.local.WeatherAlertScheduler
@@ -56,7 +58,7 @@ class WeatherAlertsRepository @Inject constructor(
     suspend fun removeAlert(alert: UserWeatherAlert) {
         withContext(dispatcher) {
             if (alert.deletedAt != null) {
-                throw Exception("Can't delete an already deleted alarm") // TODO: localize
+                throw InvalidStateException(R.string.error_delete_deleted_alarm)
             }
             weatherAlertsDAO.updateAll(alert.copy(deletedAt = LocalDateTime.now()))
             weatherAlertScheduler.cancelAlert(alert)
@@ -65,7 +67,7 @@ class WeatherAlertsRepository @Inject constructor(
     suspend fun setExhausted(alert: UserWeatherAlert) {
         withContext(dispatcher) {
             if (alert.exhausted) {
-                throw Exception("Can't exhaust an already exhausted alarm") // TODO: localize
+                throw InvalidStateException(R.string.error_exhaust_exhausted_alarm)
             }
             weatherAlertsDAO.updateAll(alert.copy(exhausted = true))
             weatherAlertScheduler.cancelAlert(alert)

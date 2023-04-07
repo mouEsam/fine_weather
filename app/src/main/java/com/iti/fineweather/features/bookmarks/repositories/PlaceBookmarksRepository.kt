@@ -1,6 +1,8 @@
 package com.iti.fineweather.features.bookmarks.repositories
 
+import com.iti.fineweather.R
 import com.iti.fineweather.core.di.IODispatcher
+import com.iti.fineweather.core.helpers.InvalidStateException
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.features.bookmarks.entities.PlaceBookmark
 import com.iti.fineweather.features.bookmarks.services.local.PlaceBookmarksDAO
@@ -41,7 +43,7 @@ class PlaceBookmarksRepository @Inject constructor(
     suspend fun removeBookmark(bookmark: PlaceBookmark) {
         withContext(dispatcher) {
             if (bookmark.deletedAt != null) {
-                throw Exception("Can't delete an already deleted alarm") // TODO: localize
+                throw InvalidStateException(R.string.error_delete_deleted_place)
             }
             placeBookmarksDAO.updateAll(bookmark.copy(deletedAt = LocalDateTime.now()))
         }

@@ -91,8 +91,8 @@ class WeatherAlertsNotifier @Inject constructor(
             NotificationCompat
                 .Builder(applicationContext, CHANNEL_ID)
                 .setSmallIcon(R.mipmap.ic_launcher_round)
-                .setContentTitle(applicationContext.resources.getString(R.string.app_name))
-                .setContentText("Retrieving latest weather events") // TODO: localize
+                .setContentTitle(applicationContext.resources.getString(R.string.alerts_notification_operation_title))
+                .setContentText(applicationContext.resources.getString(R.string.alerts_notification_operation_text))
                 .setSilent(true)
                 .build()
         )
@@ -101,7 +101,7 @@ class WeatherAlertsNotifier @Inject constructor(
     private fun createChannel() {
         NotificationChannelCompat
             .Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)
-            .setName("Notifications about weather events") // TODO: localize
+            .setName(applicationContext.resources.getString(R.string.alerts_notification_operation_channel_desc))
             .setSound(
                 RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION),
                 AudioAttributes.Builder()

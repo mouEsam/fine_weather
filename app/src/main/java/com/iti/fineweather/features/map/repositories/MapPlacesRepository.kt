@@ -10,6 +10,8 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.iti.fineweather.R
+import com.iti.fineweather.core.helpers.InvalidStateException
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.features.common.utils.getAddress
 import com.iti.fineweather.features.map.models.MapPlaceResult
@@ -67,7 +69,7 @@ class MapPlacesRepository @Inject constructor(
                     )
                 ))
             } else {
-                continuation.resume(Resource.Error(Exception("Not found"))) // TODO: localize
+                continuation.resume(Resource.Error(InvalidStateException(R.string.error_place_not_found)))
             }
         }
     }

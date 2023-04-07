@@ -11,12 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.maps.android.compose.*
+import com.iti.fineweather.R
 import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
 import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.helpers.UiState
@@ -161,7 +163,7 @@ fun MapScreen(
                             resultLiveData.value = selectedLocation
                         },
                     ) {
-                        Text("Select") // TODO: Localize
+                        Text(stringResource(R.string.map_select_place, selectedLocation.name))
                     }
                 }
             }
@@ -197,7 +199,7 @@ fun AutoCompletePlaces(
                 mapPlacesViewModel.getPredictions(it)
                 exp = true
             },
-            label = { Text("Search") }, // TODO: localize
+            label = { Text(stringResource(R.string.map_search)) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(
                     expanded = exp
