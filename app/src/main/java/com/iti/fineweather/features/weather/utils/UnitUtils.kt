@@ -58,6 +58,6 @@ private fun UserPreferences.TemperatureUnit.convert(temp: Float): Float {
         UserPreferences.TemperatureUnit.CELSIUS,
         UserPreferences.TemperatureUnit.UNRECOGNIZED -> (temp - Constants.ZERO_KELVIN_CELSIUS)
 
-        UserPreferences.TemperatureUnit.FAHRENHEIT -> (temp - Constants.ZERO_KELVIN_CELSIUS) * (9.0f / 5.0f + 32.0f)
+        UserPreferences.TemperatureUnit.FAHRENHEIT -> (temp - Constants.ZERO_KELVIN_CELSIUS) * 9.0f / 5.0f + 32.0f
     }.round(Constants.DECIMAL_PLACES)
 }
