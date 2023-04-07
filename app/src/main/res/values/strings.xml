@@ -10,7 +10,12 @@
     <string name="home_tab_today">Today %s</string>
     <string name="home_tab_this_week">This week</string>
     <string name="home_tab_summery">Summery</string>
-<!--  Alerts  -->
+    <string name="home_tab_alerts">Alerts</string>
+    <string name="home_tab_alert_start_at">Starts at %s</string>
+    <string name="home_tab_alert_until">Until %s</string>
+    <string name="home_tab_alert_source">Source: %s</string>
+    <string name="home_tab_alert_no_alerts">No weather alerts for the foreseeable future.</string>
+    <!--  Alerts  -->
     <string name="alerts_no_weather_alerts">It seems like you don\'t have any weather alerts for the foreseeable future.</string>
     <string name="alerts_title">Weather Alerts</string>
     <string name="alerts_empty">It seems like you don\'t have any alerts scheduled for the foreseeable future.</string>
