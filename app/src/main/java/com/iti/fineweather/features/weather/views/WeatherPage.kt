@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
@@ -148,16 +149,16 @@ fun WeatherContent(
                         }
                         Row(
                             modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
-                            verticalAlignment = Alignment.Top,
                         ) {
-
                             Icon(
-                                imageVector = Icons.Rounded.LocationOn, contentDescription = null
+                                imageVector = Icons.Rounded.LocationOn,
+                                contentDescription = null,
+                                modifier = Modifier.alignByBaseline().padding(top = 5.dp),
                             )
                             Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
                             Text(
+                                modifier = Modifier.alignByBaseline().weight(1.0f),
                                 text = weatherViewData?.location?.city ?: stringResource(R.string.placeholder_location),
-                                modifier = Modifier.weight(1.0f),
                                 style = LocalTheme.typography.title,
                             )
                         }
@@ -168,6 +169,7 @@ fun WeatherContent(
                         } else if (weatherViewDataState is UiState.Error) {
                             IconButton(
                                 onClick = {
+                                    Timber.d("ASD")
                                     weatherViewModel.refetchData()
                                 },
                                 content = {
