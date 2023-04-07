@@ -3,7 +3,7 @@ package com.iti.fineweather.features.weather.models
 import com.google.gson.*
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
-import com.iti.fineweather.features.weather.helpers.RainDeserializer
+import com.iti.fineweather.features.weather.helpers.HourValueDeserializer
 
 data class RemoteWeatherResponse(
     val lat: Double,
@@ -31,22 +31,30 @@ data class RemoteWeatherData(
     val moonrise: Long?,
     // Daily only
     val moonset: Long?,
+    @JsonAdapter(value = HourValueDeserializer::class)
     val moonPhase: Float?,
     val temp: Temperature,
     val feelsLike: Temperature,
     val pressure: Int, // hPa
     val humidity: Int, // %
+    @JsonAdapter(value = HourValueDeserializer::class)
     val dewPoint: Float, // Kelvin
     @SerializedName("uvi")
+    @JsonAdapter(value = HourValueDeserializer::class)
     val uvIndex: Float,
     val clouds: Int, // %
     val visibility: Int, // Meters
+    @JsonAdapter(value = HourValueDeserializer::class)
     val windSpeed: Float, // Metre/Sec
+    @JsonAdapter(value = HourValueDeserializer::class)
     val windDeg: Float, // degrees
+    @JsonAdapter(value = HourValueDeserializer::class)
     val windGust: Float?, // metre/sec
+    @JsonAdapter(value = HourValueDeserializer::class)
     val pop: Float?,
+    @JsonAdapter(value = HourValueDeserializer::class)
     val snow: Float?, // mm/h
-    @JsonAdapter(value = RainDeserializer::class)
+    @JsonAdapter(value = HourValueDeserializer::class)
     val rain: Float?, // mm/h
     val weather: List<WeatherItem>
 )

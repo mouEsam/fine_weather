@@ -16,6 +16,8 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.painter.Painter
@@ -26,8 +28,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
@@ -101,9 +107,15 @@ fun WeatherContent(
     val backgroundColor = Color(colorPalette.dominantSwatch?.rgb!!)
     val foregroundColor = Color(colorPalette.dominantSwatch?.bodyTextColor!!)
     Surface(
-        color = backgroundColor,
-        contentColor = foregroundColor,
-        modifier = Modifier.background(color = backgroundColor).then(modifier),
+        color = Color.Unspecified,
+        contentColor = backgroundColor,
+        modifier = Modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(backgroundColor, foregroundColor)
+                )
+            )
+            .then(modifier),
     ) {
         val dateFormatter = rememberLocalizedDateTimeFormatter("yyyy-MM-dd")
         Column(
@@ -111,102 +123,114 @@ fun WeatherContent(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(
-                    vertical = LocalTheme.spaces.medium,
-                ).padding(
-                    start = LocalTheme.spaces.large,
-                    end = LocalTheme.spaces.small,
-                ),
-                verticalAlignment = Alignment.Top,
+            Surface(
+                color = Color.Unspecified,
+                contentColor = foregroundColor,
             ) {
-                Row(
-                    modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
-                    verticalAlignment = Alignment.Top,
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.LocationOn, contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
-                    Text(
-                        text = weatherViewData?.location?.city ?: stringResource(R.string.placeholder_location),
-                        modifier = Modifier.weight(1.0f),
-                        style = LocalTheme.typography.title,
-                    )
-                    if (weatherViewDataState is UiState.Loading) {
-                        CircularProgressIndicator()
-                    } else if (weatherViewDataState is UiState.Error) {
-                        Icon(
-                            imageVector = Icons.Outlined.ErrorOutline, contentDescription = null
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(
+                            vertical = LocalTheme.spaces.medium,
+                        ).padding(
+                            start = LocalTheme.spaces.large,
+                            end = LocalTheme.spaces.small,
+                        ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row(
+                            modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
+                            verticalAlignment = Alignment.Top,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.LocationOn, contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
+                            Text(
+                                text = weatherViewData?.location?.city ?: stringResource(R.string.placeholder_location),
+                                modifier = Modifier.weight(1.0f),
+                                style = LocalTheme.typography.title,
+                            )
+
+                        }
+                        if (weatherViewDataState is UiState.Loading) {
+                            CircularProgressIndicator()
+                        } else if (weatherViewDataState is UiState.Error) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline, contentDescription = null
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
+                        IconButton(onClick = {
+                            navController.navigate(SettingsScreen.routeInfo.toNavRequest())
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Settings, contentDescription = null
+                            )
+                        }
+                        IconButton(onClick = {
+                            navController.navigate(BookmarksScreen.routeInfo.toNavRequest())
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.Bookmark, contentDescription = null
+                            )
+                        }
+                        IconButton(onClick = {
+                            navController.navigate(AlertsScreen.routeInfo.toNavRequest())
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.CrisisAlert, contentDescription = null
+                            )
+                        }
+                    }
+
+                    Column(
+                        modifier = Modifier.align(Alignment.Start).padding(start = LocalTheme.spaces.large)
+                    ) {
+                        Text(
+                            text = weatherViewData?.let { getCurrentDate(it.timezone) }
+                                ?: stringResource(R.string.placeholder_time),
+                            style = LocalTheme.typography.bodyBold,
+                        )
+                        Text(
+                            text = weatherViewData?.let { getCurrentTimeText(it.timezone) }
+                                ?: stringResource(R.string.placeholder_time),
+                            style = LocalTheme.typography.bodyBold,
                         )
                     }
-                }
-                Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
-                IconButton(onClick = {
-                    navController.navigate(SettingsScreen.routeInfo.toNavRequest())
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Settings, contentDescription = null
+
+                    val painter: Painter = if (weatherViewData != null) {
+                        val context = LocalContext.current
+                        val weatherState = weatherViewData.now.weatherState
+                        rememberAsyncImagePainter(
+                            model = ImageRequest.Builder(context).decoderFactory(SvgDecoder.Factory())
+                                .data("android.resource://${context.applicationContext.packageName}/${weatherState.icon}")
+                                .size(Size.ORIGINAL).build()
+                        )
+                    } else {
+                        painterResource(R.drawable.not_available)
+                    }
+
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxWidth(0.6f),
                     )
-                }
-                IconButton(onClick = {
-                    navController.navigate(BookmarksScreen.routeInfo.toNavRequest())
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Bookmark, contentDescription = null
+
+                    Text(
+                        text = weatherViewData?.now?.weatherState?.main ?: stringResource(R.string.placeholder_weather),
+                        style = LocalTheme.typography.subtitle,
                     )
-                }
-                IconButton(onClick = {
-                    navController.navigate(AlertsScreen.routeInfo.toNavRequest())
-                }) {
-                    Icon(
-                        imageVector = Icons.Outlined.CrisisAlert, contentDescription = null
+
+                    TemperatureItem(
+                        style = LocalTheme.typography.headerLarge,
+                        temp = weatherViewData?.now?.temperature,
+                        units = weatherViewData?.units,
                     )
                 }
             }
-
-            Column(
-                modifier = Modifier.align(Alignment.Start).padding(start = LocalTheme.spaces.large)
-            ) {
-                Text(
-                    text = weatherViewData?.let { getCurrentDate(it.timezone) }
-                        ?: stringResource(R.string.placeholder_time),
-                    style = LocalTheme.typography.bodyBold,
-                )
-                Text(
-                    text = weatherViewData?.let { getCurrentTimeText(it.timezone) }
-                        ?: stringResource(R.string.placeholder_time),
-                    style = LocalTheme.typography.bodyBold,
-                )
-            }
-
-            val painter: Painter = if (weatherViewData != null) {
-                val context = LocalContext.current
-                val weatherState = weatherViewData.now.weatherState
-                rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(context).decoderFactory(SvgDecoder.Factory())
-                        .data("android.resource://${context.applicationContext.packageName}/${weatherState.icon}")
-                        .size(Size.ORIGINAL).build()
-                )
-            } else {
-                painterResource(R.drawable.not_available)
-            }
-
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth(0.6f),
-            )
-
-            Text(
-                text = weatherViewData?.now?.weatherState?.main ?: stringResource(R.string.placeholder_weather),
-                style = LocalTheme.typography.subtitle,
-            )
-            Text(
-                text = if (weatherViewData != null) "${weatherViewData.now.temperature}°"
-                else stringResource(R.string.placeholder_temperature),
-                style = LocalTheme.typography.headerLarge,
-            )
 
             WeatherParamRow(
                 weatherData = weatherViewData?.now,
@@ -258,16 +282,19 @@ fun WeatherContent(
                 ) { currentSelected ->
                     when (currentSelected) {
                         0 -> HourlyWeather(
+                            contentColor = foregroundColor,
                             weatherUnitData = weatherViewData?.units,
                             weatherData = weatherViewData?.hourly,
                         )
 
                         1 -> DailyWeather(
+                            contentColor = foregroundColor,
                             weatherUnitData = weatherViewData?.units,
                             weatherData = weatherViewData?.daily,
                         )
 
                         else -> WeatherDescription(
+                            contentColor = foregroundColor,
                             weatherData = weatherViewData,
                         )
                     }
@@ -360,41 +387,55 @@ fun WeatherParam(
 
 @Composable
 fun WeatherDescription(
+    contentColor: Color,
     weatherData: WeatherViewData?
 ) {
     val dayFormatter = rememberLocalizedDateTimeFormatter("EEEE")
-
     val now = LocalDateTime.now()
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = LocalTheme.spaces.large).background(
-            color = Color.White.copy(alpha = 0.4f), shape = LocalTheme.shapes.mediumRoundedCornerShape
-        ).padding(
-            vertical = LocalTheme.spaces.medium,
-            horizontal = LocalTheme.spaces.large,
-        ),
+
+    val color = LocalContentColor.current
+    Surface(
+        color = Color.Unspecified,
+        contentColor = contentColor
     ) {
-        Text(
-            text = weatherData?.let { dayFormatter.format(now) } ?: stringResource(R.string.placeholder_day),
-            style = LocalTheme.typography.label,
-        )
-        Text(
-            text = weatherData?.let { getCurrentTimeText(it.timezone) } ?: stringResource(R.string.placeholder_time),
-            style = LocalTheme.typography.label,
-        )
-        WeatherIcon(
-            icon = weatherData?.now?.weatherState?.iconUrlX2
-        )
-        TemperatureView(
-            temp = weatherData?.now?.tempObj,
-            units = weatherData?.units,
-        )
-        Text(
-            text = weatherData?.now?.weatherState?.description ?: stringResource(R.string.placeholder_description),
-            style = LocalTheme.typography.bodyBold,
-            textAlign = TextAlign.Center,
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+                .padding(
+                    horizontal = LocalTheme.spaces.large,
+                ).clip(
+                    shape = LocalTheme.shapes.mediumRoundedCornerShape,
+                ).background(
+                    color = color.copy(alpha = 0.8f)
+                ).padding(
+                    vertical = LocalTheme.spaces.medium,
+                    horizontal = LocalTheme.spaces.large,
+                ),
+        ) {
+            Text(
+                text = weatherData?.let { dayFormatter.format(now) } ?: stringResource(R.string.placeholder_day),
+                style = LocalTheme.typography.label,
+            )
+            Text(
+                text = weatherData?.let { getCurrentTimeText(it.timezone) }
+                    ?: stringResource(R.string.placeholder_time),
+                style = LocalTheme.typography.label,
+            )
+            WeatherIcon(
+                modifier = Modifier.weight(1.0f),
+                icon = weatherData?.now?.weatherState?.iconUrlX2
+            )
+            TemperatureView(
+                temp = weatherData?.now?.tempObj,
+                units = weatherData?.units,
+            )
+            Text(
+                text = weatherData?.now?.weatherState?.description ?: stringResource(R.string.placeholder_description),
+                style = LocalTheme.typography.bodyBold,
+                textAlign = TextAlign.Center,
+            )
+        }
     }
 }
 
@@ -425,6 +466,7 @@ fun getCurrentTimeText(timeZone: TimeZone): String {
 
 @Composable
 fun HourlyWeather(
+    contentColor: Color,
     weatherData: SortedMap<LocalTime, WeatherData>?,
     weatherUnitData: WeatherUnitData?,
 ) {
@@ -442,6 +484,7 @@ fun HourlyWeather(
         items(count = items?.size ?: 7) { index ->
             val entry = items?.getOrNull(index)
             WeatherSummery(
+                contentColor = contentColor,
                 showParams = true,
                 label = entry?.key?.let(timeFormatter::format) ?: stringResource(R.string.placeholder_day),
                 weatherData = entry?.value,
@@ -453,6 +496,7 @@ fun HourlyWeather(
 
 @Composable
 fun DailyWeather(
+    contentColor: Color,
     weatherData: SortedMap<LocalDate, WeatherData>?,
     weatherUnitData: WeatherUnitData?,
 ) {
@@ -469,6 +513,7 @@ fun DailyWeather(
         items(count = items?.size ?: 7) { index ->
             val entry = items?.getOrNull(index)
             WeatherSummery(
+                contentColor = contentColor,
                 showParams = true,
                 label = entry?.key?.let(dayFormatter::format) ?: stringResource(R.string.placeholder_day),
                 weatherData = entry?.value,
@@ -481,39 +526,49 @@ fun DailyWeather(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WeatherSummery(
+    contentColor: Color,
     showParams: Boolean,
     label: String,
     weatherData: WeatherData?,
     weatherUnitData: WeatherUnitData?,
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.background(
-            color = Color.White.copy(alpha = 0.4f), shape = LocalTheme.shapes.mediumRoundedCornerShape
-        ).padding(
-            vertical = LocalTheme.spaces.medium,
-            horizontal = LocalTheme.spaces.large,
-        ),
+    val color = LocalContentColor.current
+    Surface(
+        color = Color.Unspecified,
+        contentColor = contentColor
     ) {
-        Text(
-            text = label,
-            style = LocalTheme.typography.label,
-        )
-        WeatherIcon(
-            icon = weatherData?.weatherState?.iconUrlX2
-        )
-        TemperatureView(
-            temp = weatherData?.tempObj,
-            units = weatherUnitData,
-        )
-        if (showParams) {
-            Spacer(modifier = Modifier.height(LocalTheme.spaces.medium))
-            WeatherParamRow(
-                weatherData = weatherData,
-                weatherUnitData = weatherUnitData,
-                maxInRow = 2,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .clip(
+                    shape = LocalTheme.shapes.mediumRoundedCornerShape,
+                ).background(
+                    color = color.copy(alpha = 0.8f)
+                ).padding(
+                    vertical = LocalTheme.spaces.medium,
+                    horizontal = LocalTheme.spaces.large,
+                ),
+        ) {
+            Text(
+                text = label,
+                style = LocalTheme.typography.label,
             )
+            WeatherIcon(
+                icon = weatherData?.weatherState?.iconUrlX2
+            )
+            TemperatureView(
+                temp = weatherData?.tempObj,
+                units = weatherUnitData,
+            )
+            if (showParams) {
+                Spacer(modifier = Modifier.height(LocalTheme.spaces.medium))
+                WeatherParamRow(
+                    weatherData = weatherData,
+                    weatherUnitData = weatherUnitData,
+                    maxInRow = 2,
+                )
+            }
         }
     }
 }
@@ -525,8 +580,9 @@ fun TemperatureView(
 ) {
     when (temp) {
         is Temperature.Average -> {
-            Text(
-                text = "${temp.temp}°",
+            TemperatureItem(
+                temp = temp.temp,
+                units = units,
                 style = LocalTheme.typography.title,
             )
         }
@@ -538,22 +594,21 @@ fun TemperatureView(
                     alignment = Alignment.CenterHorizontally,
                 ),
             ) {
-                Text(
-                    text = "${temp.day}°",
-                    color = Color.Yellow.compositeOver(Color.Red),
-                    style = LocalTheme.typography.title,
+                TemperatureItem(
+                    temp = temp.day,
+                    units = units,
+                    style = LocalTheme.typography.title.copy(color = Color.Yellow.compositeOver(Color.Red)),
                 )
-                Text(
-                    text = "${temp.night}°",
-                    color = Color.Black,
+                TemperatureItem(
+                    temp = temp.night,
+                    units = units,
                     style = LocalTheme.typography.title,
                 )
             }
         }
 
         null -> {
-            Text(
-                text = stringResource(R.string.placeholder_temperature),
+            TemperatureItem(
                 style = LocalTheme.typography.title,
             )
         }
@@ -561,23 +616,44 @@ fun TemperatureView(
 }
 
 @Composable
+fun TemperatureItem(
+    temp: Float? = null,
+    units: WeatherUnitData? = null,
+    style: TextStyle,
+) {
+    Text(
+        style = style,
+        text = buildAnnotatedString {
+            append(
+                if (temp != null) "$temp"
+                else stringResource(R.string.placeholder_temperature)
+            )
+            withStyle(
+                style = style
+                    .copy(
+                        fontSize = style.fontSize * 0.4,
+                        baselineShift = BaselineShift.Superscript,
+                    ).toSpanStyle(),
+            ) {
+                if (units != null) {
+                    append(stringResource(units.temperature))
+                }
+            }
+        },
+    )
+}
+
+@Composable
 fun WeatherIcon(
     icon: String?,
     modifier: Modifier = Modifier,
 ) {
-    if (icon != null) {
-        AsyncImage(
-            model = icon,
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = modifier,
-        )
-    } else {
-        Image(
-            painter = painterResource(R.drawable.not_available),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(LocalTheme.spaces.xxLarge).then(modifier),
-        )
-    }
+    AsyncImage(
+        model = icon,
+        placeholder = painterResource(R.drawable.not_available_small),
+        error = painterResource(R.drawable.not_available_small),
+        contentDescription = null,
+        contentScale = ContentScale.Fit,
+        modifier = modifier,
+    )
 }

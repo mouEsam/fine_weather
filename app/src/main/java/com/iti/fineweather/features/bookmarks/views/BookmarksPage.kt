@@ -22,8 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.maps.model.LatLng
 import com.iti.fineweather.R
-import com.iti.fineweather.core.di.requireComposeEntryPoint
 import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.theme.LocalTheme
@@ -31,18 +31,21 @@ import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.bookmarks.entities.PlaceBookmark
 import com.iti.fineweather.features.bookmarks.viewmodels.PlaceBookmarksViewModel
+import com.iti.fineweather.features.bookmarks.viewmodels.PlaceTimezoneViewModel
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.weather.views.WeatherScreen
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -242,15 +245,11 @@ fun BookmarksList(
                                         horizontal = LocalTheme.spaces.large,
                                     ),
                             ) {
-                                val timeZoneEngine = requireComposeEntryPoint().timeZoneEngine
-                                val timeZone by remember {
-                                    derivedStateOf {
-                                        timeZoneEngine.query(bookmark.latitude, bookmark.longitude).orElse(
-                                            ZoneId.systemDefault()
-                                        )
-                                    }
+                                val timeZoneViewModel: PlaceTimezoneViewModel =
+                                    hiltViewModel(key = bookmark.id.toString())
+                                LaunchedEffect(key1 = bookmark) {
+                                    timeZoneViewModel.setLocation(LatLng(bookmark.latitude, bookmark.longitude))
                                 }
-
 
                                 Text(
                                     text = bookmark.city,
@@ -265,15 +264,11 @@ fun BookmarksList(
                                         alignment = Alignment.End,
                                     ),
                                 ) {
-
-                                    Box {
-                                        val time by timeFlow.collectAsState()
-                                        ConfigurationValue(
-                                            label = timeFormatter.format(
-                                                time.atZoneSameInstant(timeZone)
-                                            ),
-                                        )
-                                    }
+                                    PlaceTime(
+                                        timeFormatter = timeFormatter,
+                                        timeFlow = timeFlow,
+                                        timeZoneViewModel = timeZoneViewModel,
+                                    )
                                     ConfigurationValue(
                                         label = dateFormatter.format(timeFlow.value),
                                     )
@@ -289,6 +284,21 @@ fun BookmarksList(
 
         }
     }
+}
+
+@Composable
+fun PlaceTime(
+    timeFormatter: DateTimeFormatter,
+    timeFlow: StateFlow<OffsetDateTime>,
+    timeZoneViewModel: PlaceTimezoneViewModel,
+) {
+    val timezoneState by timeZoneViewModel.timezoneState.collectAsState()
+    val time by timeFlow.collectAsState()
+    ConfigurationValue(
+        label = timezoneState.data?.let { timezone ->
+            timeFormatter.format(time.atZoneSameInstant(timezone))
+        } ?: stringResource(R.string.bookmarks_loading_timezone),
+    )
 }
 
 @Composable
