@@ -207,6 +207,7 @@ fun AutoCompletePlaces(
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(),
             modifier = Modifier
+                .menuAnchor()
                 .fillMaxWidth(1.0f)
                 .onFocusChanged {
                     exp = it.hasFocus
