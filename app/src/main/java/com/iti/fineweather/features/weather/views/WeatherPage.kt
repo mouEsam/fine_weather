@@ -210,7 +210,9 @@ fun WeatherContent(
                     }
 
                     Column(
-                        modifier = Modifier.align(Alignment.Start).padding(start = LocalTheme.spaces.large)
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(start = LocalTheme.spaces.large)
                     ) {
                         Text(
                             text = weatherViewData?.let { getCurrentDate(it.timezone) }
@@ -239,7 +241,7 @@ fun WeatherContent(
                     Image(
                         painter = painter,
                         contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(0.5f),
+                        modifier = Modifier.fillMaxWidth(0.4f),
                     )
 
                     Text(
@@ -256,7 +258,12 @@ fun WeatherContent(
                     WeatherParamRow(
                         weatherData = weatherViewData?.now,
                         weatherUnitData = weatherViewData?.units,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = LocalTheme.spaces.xxLarge),
+                        modifier = Modifier
+                            .padding(horizontal = LocalTheme.spaces.large)
+                            .clip(
+                                shape = LocalTheme.shapes.smallRoundedCornerShape,
+                            ).background(backgroundColor.copy(alpha = 0.4f))
+                            .padding(LocalTheme.spaces.large),
                         style = LocalTheme.typography.action
                     )
                 }
