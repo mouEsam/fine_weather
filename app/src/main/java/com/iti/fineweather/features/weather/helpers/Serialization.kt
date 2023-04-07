@@ -16,7 +16,7 @@ class TemperatureDeserializer : JsonDeserializer<Temperature> {
     }
 }
 
-class RainDeserializer : JsonDeserializer<Float> {
+class HourValueDeserializer : JsonDeserializer<Float> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Float? {
         return when {
             json.isJsonObject -> { json.asJsonObject.get("1h").asFloat }

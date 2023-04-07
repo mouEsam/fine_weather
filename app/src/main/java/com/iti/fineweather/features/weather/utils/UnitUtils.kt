@@ -13,8 +13,8 @@ val UserPreferences.TemperatureUnit.unitRes: Int
             UserPreferences.TemperatureUnit.CELSIUS,
             UserPreferences.TemperatureUnit.UNRECOGNIZED -> R.string.temperature_celsius
 
-            UserPreferences.TemperatureUnit.KELVIN -> R.string.temperature_celsius
-            UserPreferences.TemperatureUnit.FAHRENHEIT -> R.string.temperature_celsius
+            UserPreferences.TemperatureUnit.KELVIN -> R.string.temperature_kelvin
+            UserPreferences.TemperatureUnit.FAHRENHEIT -> R.string.temperature_fahrenheit
         }
     }
 
