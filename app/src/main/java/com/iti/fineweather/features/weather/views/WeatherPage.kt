@@ -33,7 +33,9 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
@@ -148,16 +150,16 @@ fun WeatherContent(
                         }
                         Row(
                             modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
-                            verticalAlignment = Alignment.Top,
                         ) {
-
                             Icon(
-                                imageVector = Icons.Rounded.LocationOn, contentDescription = null
+                                imageVector = Icons.Rounded.LocationOn,
+                                contentDescription = null,
+                                modifier = Modifier.alignByBaseline().padding(top = 5.dp),
                             )
                             Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
                             Text(
+                                modifier = Modifier.alignByBaseline().weight(1.0f),
                                 text = weatherViewData?.location?.city ?: stringResource(R.string.placeholder_location),
-                                modifier = Modifier.weight(1.0f),
                                 style = LocalTheme.typography.title,
                             )
                         }
@@ -168,6 +170,7 @@ fun WeatherContent(
                         } else if (weatherViewDataState is UiState.Error) {
                             IconButton(
                                 onClick = {
+                                    Timber.d("ASD")
                                     weatherViewModel.refetchData()
                                 },
                                 content = {
@@ -208,7 +211,9 @@ fun WeatherContent(
                     }
 
                     Column(
-                        modifier = Modifier.align(Alignment.Start).padding(start = LocalTheme.spaces.large)
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(start = LocalTheme.spaces.large)
                     ) {
                         Text(
                             text = weatherViewData?.let { getCurrentDate(it.timezone) }
@@ -237,7 +242,7 @@ fun WeatherContent(
                     Image(
                         painter = painter,
                         contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(0.5f),
+                        modifier = Modifier.fillMaxWidth(0.4f),
                     )
 
                     Text(
@@ -254,7 +259,12 @@ fun WeatherContent(
                     WeatherParamRow(
                         weatherData = weatherViewData?.now,
                         weatherUnitData = weatherViewData?.units,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = LocalTheme.spaces.xxLarge),
+                        modifier = Modifier
+                            .padding(horizontal = LocalTheme.spaces.large)
+                            .clip(
+                                shape = LocalTheme.shapes.smallRoundedCornerShape,
+                            ).background(backgroundColor.copy(alpha = 0.4f))
+                            .padding(LocalTheme.spaces.large),
                         style = LocalTheme.typography.action
                     )
                 }
@@ -269,7 +279,7 @@ fun WeatherContent(
                 val items = listOf(
                     stringResource(R.string.home_tab_today, dateFormatter.format(LocalDate.now())),
                     stringResource(R.string.home_tab_this_week),
-                    stringResource(R.string.home_tab_summery)
+                    stringResource(R.string.home_tab_alerts)
                 )
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = LocalTheme.spaces.large),
@@ -315,9 +325,9 @@ fun WeatherContent(
                             weatherData = weatherViewData?.daily,
                         )
 
-                        else -> WeatherDescription(
+                        else -> Alerts(
                             contentColor = foregroundColor,
-                            weatherData = weatherViewData,
+                            alerts = weatherViewData?.alerts,
                         )
                     }
                 }
@@ -397,12 +407,12 @@ fun WeatherDescription(
         ) {
             Text(
                 text = weatherData?.let { dayFormatter.format(now) } ?: stringResource(R.string.placeholder_day),
-                style = LocalTheme.typography.label,
+                style = LocalTheme.typography.bodyBold,
             )
             Text(
                 text = weatherData?.let { getCurrentTimeText(it.timezone) }
                     ?: stringResource(R.string.placeholder_time),
-                style = LocalTheme.typography.label,
+                style = LocalTheme.typography.body,
             )
             WeatherIcon(
                 modifier = Modifier.weight(1.0f),
@@ -414,7 +424,7 @@ fun WeatherDescription(
             )
             Text(
                 text = weatherData?.now?.weatherState?.description ?: stringResource(R.string.placeholder_description),
-                style = LocalTheme.typography.bodyBold,
+                style = LocalTheme.typography.actionBold,
                 textAlign = TextAlign.Center,
             )
         }
@@ -505,7 +515,97 @@ fun DailyWeather(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun Alerts(
+    contentColor: Color,
+    alerts: List<WeatherAlertView>?,
+) {
+    val dateTimeFormatter = rememberLocalizedDateTimeFormatter("MM-dd, EEEE hh:mm a")
+
+    if (alerts?.isEmpty() != true) {
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = LocalTheme.spaces.large),
+            horizontalArrangement = Arrangement.spacedBy(
+                space = LocalTheme.spaces.large,
+                alignment = Alignment.Start,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+
+            items(count = alerts?.size ?: 7) { index ->
+                val alert = alerts?.getOrNull(index)
+                val color = LocalContentColor.current
+                Surface(
+                    color = Color.Unspecified,
+                    contentColor = contentColor
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .clip(
+                                shape = LocalTheme.shapes.mediumRoundedCornerShape,
+                            ).background(
+                                color = color.copy(alpha = 0.8f)
+                            ).padding(
+                                vertical = LocalTheme.spaces.medium,
+                                horizontal = LocalTheme.spaces.large,
+                            ).width(200.dp),
+                    ) {
+                        Text(
+                            text = alert?.event ?: stringResource(R.string.placeholder_event),
+                            style = LocalTheme.typography.action,
+                        )
+                        val startsAt = alert?.start?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
+                        Text(
+                            text = stringResource(R.string.home_tab_alert_start_at, startsAt),
+                            style = LocalTheme.typography.body,
+                        )
+                        val endsAt = alert?.end?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
+                        Text(
+                            text = stringResource(R.string.home_tab_alert_until, endsAt),
+                            style = LocalTheme.typography.body,
+                        )
+                        Text(
+                            text = alert?.description ?: stringResource(R.string.placeholder_event_description),
+                            style = LocalTheme.typography.label,
+                            maxLines = 4,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                        val source = alert?.senderName ?: stringResource(R.string.placeholder_event)
+                        Text(
+                            text = stringResource(R.string.home_tab_alert_source, source),
+                            style = LocalTheme.typography.label,
+                        )
+                    }
+                }
+            }
+        }
+    } else {
+        Box(
+            modifier = Modifier
+                .padding(horizontal = LocalTheme.spaces.large)
+                .fillMaxSize()
+                .clip(
+                    shape = LocalTheme.shapes.mediumRoundedCornerShape,
+                ).background(
+                    color = LocalContentColor.current.copy(alpha = 0.8f)
+                ).padding(
+                    vertical = LocalTheme.spaces.medium,
+                    horizontal = LocalTheme.spaces.large,
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = stringResource(R.string.home_tab_alert_no_alerts),
+                style = LocalTheme.typography.subtitle,
+                color = contentColor,
+                textAlign = TextAlign.Center,
+            )
+        }
+    }
+}
+
 @Composable
 fun WeatherSummery(
     contentColor: Color,

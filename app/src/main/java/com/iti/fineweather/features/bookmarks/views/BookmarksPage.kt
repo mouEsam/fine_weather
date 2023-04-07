@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +20,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.maps.model.LatLng
@@ -249,12 +252,25 @@ fun BookmarksList(
                                     timeZoneViewModel.setLocation(LatLng(bookmark.latitude, bookmark.longitude))
                                 }
 
-                                Text(
-                                    text = bookmark.city,
-                                    color = LocalTheme.colors.mainContent,
-                                    style = LocalTheme.typography.bodyBold,
-                                )
-
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.LocationOn,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(LocalTheme.spaces.large)
+                                            .alignByBaseline()
+                                            .padding(top = 5.dp),
+                                    )
+                                    Spacer(modifier = Modifier.width(LocalTheme.spaces.small))
+                                    Text(
+                                        text = bookmark.city,
+                                        color = LocalTheme.colors.mainContent,
+                                        style = LocalTheme.typography.bodyBold,
+                                        modifier = Modifier.alignByBaseline().weight(1.0f),
+                                    )
+                                }
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.spacedBy(

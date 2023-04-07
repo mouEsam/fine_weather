@@ -17,7 +17,6 @@ fun UserPreferences.Language.toLocale(): Locale {
 @Composable
 fun UserPreferences.Language.toLocalizedName(): String {
     return when (this) {
-        // TODO: localize
         UserPreferences.Language.ARABIC -> stringResource(R.string.settings_language_ar)
         UserPreferences.Language.ENGLISH,
         UserPreferences.Language.UNRECOGNIZED -> stringResource(R.string.settings_language_en)

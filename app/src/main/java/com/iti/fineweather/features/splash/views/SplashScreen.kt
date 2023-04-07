@@ -1,7 +1,6 @@
 package com.iti.fineweather.features.splash.views
 
 import android.Manifest
-import android.R
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.*
@@ -16,6 +15,7 @@ import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.iti.fineweather.R
 import com.iti.fineweather.core.helpers.CompositionScaffoldProvider
 import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.helpers.UiState
@@ -113,7 +113,7 @@ fun MissingLanguageDialog(
 
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(text = "Select your language") }, // TODO: localize
+        title = { Text(text = stringResource(R.string.splash_select_language)) },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth()
@@ -137,7 +137,7 @@ fun MissingLanguageDialog(
                     language?.let { language -> settingsViewModel.updateLanguage(language) }
                 },
             ) {
-                Text(text = stringResource(id = R.string.ok))
+                Text(text = stringResource(id = android.R.string.ok))
             }
         },
     )
@@ -155,9 +155,9 @@ fun MissingLocation(
     val navController = LocalNavigation.navController
     AlertDialog(
         onDismissRequest = {},
-        title = { Text(text = "Location") }, // TODO: localize
+        title = { Text(text = stringResource(R.string.splash_location_title)) },
         text = {
-            Text(text = "How you you like to select your location ?")
+            Text(text = stringResource(R.string.splash_location_text))
         },
         confirmButton = {
             Row {
@@ -173,7 +173,7 @@ fun MissingLocation(
                         }
                     },
                 ) {
-                    Text(text = "Map") // TODO: localize
+                    Text(text = stringResource(R.string.settings_location_source_map))
                 }
                 Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
                 Button(
@@ -181,7 +181,7 @@ fun MissingLocation(
                         permissions.launchMultiplePermissionRequest()
                     },
                 ) {
-                    Text(text = "GPS") // TODO: localize
+                    Text(text = stringResource(R.string.settings_location_source_gps))
                 }
             }
         },

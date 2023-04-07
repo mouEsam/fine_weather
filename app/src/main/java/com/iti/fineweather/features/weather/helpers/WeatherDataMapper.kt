@@ -28,6 +28,7 @@ class WeatherDataMapper @Inject constructor() {
             now = mapWeatherDataToViewData(data.currentWeather, preferences),
             daily = mapDaily(data.dailyWeather, preferences),
             hourly = mapHourly(data.hourlyWeather, timeZone, preferences),
+            alerts = mapAlerts(data.alerts, timeZone, preferences),
         )
     }
 
@@ -39,7 +40,10 @@ class WeatherDataMapper @Inject constructor() {
         )
     }
 
-    private fun mapDaily(daily: List<RemoteWeatherData>, preferences: UserPreferences,): SortedMap<LocalDate, WeatherData> {
+    private fun mapDaily(
+        daily: List<RemoteWeatherData>,
+        preferences: UserPreferences,
+    ): SortedMap<LocalDate, WeatherData> {
         val utc = ZoneOffset.ofTotalSeconds(0)
         val weekStartEpoch = Calendar.getInstance().run {
             time = Date()
@@ -62,7 +66,11 @@ class WeatherDataMapper @Inject constructor() {
         return result
     }
 
-    private fun mapHourly(daily: List<RemoteWeatherData>, timeZone: TimeZone, preferences: UserPreferences,): SortedMap<LocalTime, WeatherData> {
+    private fun mapHourly(
+        daily: List<RemoteWeatherData>,
+        timeZone: TimeZone,
+        preferences: UserPreferences,
+    ): SortedMap<LocalTime, WeatherData> {
         val result = TreeMap<LocalTime, WeatherData>()
         daily
             .sortedBy { data -> data.timestamp }
@@ -121,4 +129,30 @@ class WeatherDataMapper @Inject constructor() {
         }
     }
 
+    private fun mapAlerts(
+        alerts: List<WeatherAlert>?,
+        timeZone: TimeZone,
+        preferences: UserPreferences
+    ): List<WeatherAlertView> {
+        return alerts?.map { mapAlert(it, timeZone, preferences) } ?: listOf()
+    }
+
+    private fun mapAlert(alert: WeatherAlert, timeZone: TimeZone, preferences: UserPreferences): WeatherAlertView {
+        val start = ZonedDateTime.ofInstant(
+            Instant.ofEpochSecond(alert.start),
+            timeZone.toZoneId()
+        )
+        val end = ZonedDateTime.ofInstant(
+            Instant.ofEpochSecond(alert.end),
+            timeZone.toZoneId()
+        )
+        return WeatherAlertView(
+            senderName = alert.senderName,
+            event = alert.event,
+            start = start,
+            end = end,
+            description = alert.description,
+            tags = alert.tags,
+        )
+    }
 }

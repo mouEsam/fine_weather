@@ -4,7 +4,9 @@ import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.ZonedDateTime
 import java.util.*
 
 data class WeatherViewData(
@@ -14,6 +16,7 @@ data class WeatherViewData(
     val now: WeatherData,
     val hourly: SortedMap<LocalTime, WeatherData>,
     val daily: SortedMap<LocalDate, WeatherData>,
+    val alerts: List<WeatherAlertView>,
 )
 
 data class WeatherData(
@@ -78,5 +81,14 @@ data class WeatherUnitData(
     @StringRes val temperature: Int,
     @StringRes val pressure: Int,
     @StringRes val speed: Int
+)
+
+data class WeatherAlertView(
+    val senderName: String,
+    val event: String,
+    val start: ZonedDateTime,
+    val end: ZonedDateTime,
+    val description: String,
+    val tags: List<String> = listOf(),
 )
 

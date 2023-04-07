@@ -101,15 +101,14 @@ class WeatherViewModel @Inject constructor(
                 _uiState.value = when (result) {
                     is Resource.Success -> {
                         weatherDataResponse = result.data
-                        this@WeatherViewModel.location = location
                         val weatherViewData = weatherDataMapper.mapRemoteToView(location, result.data, preferences)
                         _uiState.value.toLoaded(weatherViewData)
                     }
-
                     is Resource.Error -> {
                         _uiState.value.toError(result.error, preserveData = false)
                     }
                 }
+                this@WeatherViewModel.location = location
             }
         }
     }

@@ -18,7 +18,6 @@ enum class RepetitionType {
     @Composable
     fun toLocalizedName(): String {
         return when (this) {
-            // TODO: localize
             RepetitionType.SINGLE -> stringResource(R.string.alerts_repetition_type_once)
             RepetitionType.DAILY -> stringResource(R.string.alerts_repetition_type_daily)
         }

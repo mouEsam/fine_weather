@@ -54,7 +54,7 @@ fun PlacesFallbackPage(modifier: Modifier = Modifier) {
 
     Column {
         Button(onClick = launchMapInputOverlay) {
-            Text("Select Location") // TODO: localize
+            Text("Select Location")
         }
     }
 }
