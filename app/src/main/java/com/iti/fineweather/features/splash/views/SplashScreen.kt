@@ -3,13 +3,17 @@ package com.iti.fineweather.features.splash.views
 import android.Manifest
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -100,7 +104,17 @@ fun SplashScreen(
                     containerColor = LocalTheme.colors.main.copy(alpha = Constants.BACKGROUND_COLOR_ALPHA),
                     contentColor = LocalTheme.colors.mainContent,
                 ) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) { }
+                    Box (
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_launcher_foreground),
+                            contentDescription = null,
+//                            alignment = Alignment.Center,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }

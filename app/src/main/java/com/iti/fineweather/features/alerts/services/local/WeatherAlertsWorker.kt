@@ -38,9 +38,9 @@ class WeatherAlertsWorker @AssistedInject constructor(
         } catch (_: Exception) {
             return Result.retry()
         }
-        weatherData.alerts?.forEach { alert ->
-            weatherAlertsNotifier.notifyForAlert(alert, alertPreferences)
-        } ?: weatherAlertsNotifier.notifyForNoAlerts(alertPreferences)
+
+        weatherAlertsNotifier.notifyForAlert(weatherData.alerts ?: listOf(), alertPreferences)
+
         if (
             alertPreferences.repetitionType == RepetitionType.SINGLE ||
             alertPreferences.endDate?.isAfter(LocalDate.now()) == false

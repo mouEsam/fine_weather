@@ -1,9 +1,11 @@
 package com.iti.fineweather.features.weather.models
 
+import android.os.Parcelable
 import com.google.gson.*
 import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 import com.iti.fineweather.features.weather.helpers.HourValueDeserializer
+import kotlinx.parcelize.Parcelize
 
 data class RemoteWeatherResponse(
     val lat: Double,
@@ -96,6 +98,7 @@ sealed class Temperature {
     abstract fun getTemp(isDay: Boolean): Float
 }
 
+@Parcelize
 data class WeatherAlert(
     val senderName: String,
     val event: String,
@@ -103,4 +106,4 @@ data class WeatherAlert(
     val end: Long,
     val description: String,
     val tags: List<String> = listOf(),
-)
+): Parcelable

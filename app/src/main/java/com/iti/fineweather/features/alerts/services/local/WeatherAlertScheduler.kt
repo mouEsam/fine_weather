@@ -55,11 +55,15 @@ class WeatherAlertScheduler @Inject constructor(
         alert: UserWeatherAlert, request: B
     ): W {
         val startDateTime = alert.startDate.atTime(alert.time)
-        val delay = Duration.between(startDateTime, LocalDateTime.now())
-        return request.setId(alert.id).setConstraints(
-                Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()
+        val delay = Duration.between(LocalDateTime.now(), startDateTime)
+        return request.setId(alert.id)
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
             )
-            .setInitialDelay(delay).build()
+            .setInitialDelay(delay)
+            .build()
     }
 
 }

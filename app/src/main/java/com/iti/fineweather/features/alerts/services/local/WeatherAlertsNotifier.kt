@@ -3,9 +3,12 @@ package com.iti.fineweather.features.alerts.services.local
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.RingtoneManager
+import android.net.Uri
+import android.os.Build
 import androidx.annotation.RequiresPermission
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
@@ -13,7 +16,9 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.ForegroundInfo
 import com.iti.fineweather.R
+import com.iti.fineweather.features.alerts.AlertsOverlayActivity
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
+import com.iti.fineweather.features.weather.helpers.WeatherDataMapper
 import com.iti.fineweather.features.weather.models.WeatherAlert
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.*
@@ -23,13 +28,42 @@ import javax.inject.Singleton
 @Singleton
 class WeatherAlertsNotifier @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
+    private val weatherDataMapper: WeatherDataMapper,
 ) {
     companion object {
         private const val CHANNEL_ID = "weather_alerts_notification_channel"
     }
 
+    val notificationUri: Uri
+        get() {
+            return (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationManagerCompat.from(applicationContext).getNotificationChannel(CHANNEL_ID)?.sound
+            } else { null }) ?: RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        }
+
     fun notifyForAlert(
-        alert: WeatherAlert,
+        alerts: List<WeatherAlert>,
+        alertPreferences: UserWeatherAlert,
+    ) {
+        if (alertPreferences.alarmEnabled) {
+            notifyForAlertsOverlayImpl(alerts, alertPreferences)
+        } else {
+            notifyForAlertsNotificationImpl(alerts, alertPreferences)
+        }
+    }
+
+    fun notifyForAlertsOverlayImpl(
+        alerts: List<WeatherAlert>,
+        alertPreferences: UserWeatherAlert,
+    ) {
+        applicationContext.startActivity(Intent(applicationContext, AlertsOverlayActivity::class.java).apply {
+            putExtra(AlertsOverlayActivity.ALERTS, ArrayList(weatherDataMapper.mapAlerts(alerts)))
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+    }
+
+    private fun notifyForAlertsNotificationImpl(
+        alerts: List<WeatherAlert>,
         alertPreferences: UserWeatherAlert,
     ) {
         if (ActivityCompat.checkSelfPermission(
@@ -37,23 +71,19 @@ class WeatherAlertsNotifier @Inject constructor(
                 Manifest.permission.POST_NOTIFICATIONS
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            notifyForAlertImpl(alert, alertPreferences)
-        }
-    }
-
-    fun notifyForNoAlerts(alertPreferences: UserWeatherAlert) {
-        if (ActivityCompat.checkSelfPermission(
-                applicationContext,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            notifyForNoAlertsImpl(alertPreferences)
+            if (alerts.isNotEmpty()) {
+                alerts.forEach { alert ->
+                    notifyForAlertImpl(alert, alertPreferences)
+                }
+            } else {
+                notifyForNoAlertsNotificationImpl(alertPreferences)
+            }
         }
     }
 
     @SuppressLint("InlinedApi")
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
-    private fun notifyForNoAlertsImpl(alertPreferences: UserWeatherAlert) {
+    private fun notifyForNoAlertsNotificationImpl(alertPreferences: UserWeatherAlert) {
         NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher_round)
             .setContentTitle(applicationContext.resources.getString(R.string.app_name))

@@ -1,9 +1,11 @@
 package com.iti.fineweather.features.weather.models
 
+import android.os.Parcelable
 import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZonedDateTime
@@ -89,6 +91,7 @@ data class WeatherUnitData(
     @StringRes val speed: Int
 )
 
+@Parcelize
 data class WeatherAlertView(
     val senderName: String,
     val event: String,
@@ -96,5 +99,5 @@ data class WeatherAlertView(
     val end: ZonedDateTime,
     val description: String,
     val tags: List<String> = listOf(),
-)
+) : Parcelable
 
