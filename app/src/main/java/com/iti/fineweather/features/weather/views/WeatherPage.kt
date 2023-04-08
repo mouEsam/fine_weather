@@ -147,7 +147,7 @@ fun WeatherContent(
                                 start = LocalTheme.spaces.large,
                                 end = LocalTheme.spaces.small,
                             ),
-                            verticalAlignment = Alignment.CenterVertically,
+                            verticalAlignment = Alignment.Top,
                         ) {
                             if (!showControls) {
                                 BackButton()
@@ -517,15 +517,15 @@ fun HourlyWeather(
             value = nextHour
         }
     }
-    val initialIndex by remember {
+    val highlightedIndex by remember {
         derivedStateOf {
             weatherHourlyDataState?.keys?.indexOfLast { time ->
                 time.isBefore(hourFlow)
-            }?.coerceAtLeast(1) ?: 1
+            }?.coerceAtLeast(1)
         }
     }
-    LaunchedEffect(initialIndex) {
-        scrollState.animateScrollToItem(initialIndex)
+    LaunchedEffect(highlightedIndex) {
+        highlightedIndex?.let { scrollState.animateScrollToItem(it) }
     }
     val timeFormatter = rememberLocalizedDateTimeFormatter("hh:mm a")
     val items =
@@ -542,9 +542,10 @@ fun HourlyWeather(
 
         items(count = items?.size ?: 7) { index ->
             val entry = items?.getOrNull(index)
+            val highlighted = index == highlightedIndex
             WeatherSummery(
-                color = if (index == initialIndex) LocalTheme.colors.main else null,
-                contentColor = if (index == initialIndex) LocalTheme.colors.mainContent else contentColor,
+                color = if (highlighted) LocalTheme.colors.main else null,
+                contentColor = if (highlighted) LocalTheme.colors.mainContent else contentColor,
                 showParams = true,
                 label = entry?.key?.let(timeFormatter::format)
                     ?: stringResource(R.string.placeholder_day),

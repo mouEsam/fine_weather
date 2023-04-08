@@ -72,7 +72,7 @@ class OverlayWindow @Inject constructor(@ApplicationContext private val context:
     }
 
     private fun initView(content: @Composable () -> Unit) {
-        val lifecycleOwner = MyLifecycleOwner()
+        val lifecycleOwner = WindowLifecycleOwner()
         val viewModelStore = ViewModelStore()
         val viewModelStoreOwner = object : ViewModelStoreOwner {
             override val viewModelStore: ViewModelStore
@@ -80,8 +80,6 @@ class OverlayWindow @Inject constructor(@ApplicationContext private val context:
         }
         lifecycleOwner.performRestore(null)
         lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_CREATE)
-
-
         rootView = ComposeView(context).apply {
             setViewTreeLifecycleOwner(lifecycleOwner)
             setViewTreeSavedStateRegistryOwner(lifecycleOwner)
@@ -91,6 +89,7 @@ class OverlayWindow @Inject constructor(@ApplicationContext private val context:
                 content()
             }
         }
+        lifecycleOwner.handleLifecycleEvent(Lifecycle.Event.ON_START)
     }
 
     fun close() {
@@ -104,7 +103,7 @@ class OverlayWindow @Inject constructor(@ApplicationContext private val context:
     }
 
 
-    internal class MyLifecycleOwner : SavedStateRegistryOwner {
+    internal class WindowLifecycleOwner : SavedStateRegistryOwner {
         private var mLifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
         private var mSavedStateRegistryController: SavedStateRegistryController = SavedStateRegistryController.create(this)
 

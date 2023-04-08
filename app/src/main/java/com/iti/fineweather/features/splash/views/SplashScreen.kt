@@ -42,7 +42,7 @@ import com.iti.fineweather.features.settings.models.UserPreferences.Language
 import com.iti.fineweather.features.settings.utils.toLocale
 import com.iti.fineweather.features.settings.utils.toLocalizedName
 import com.iti.fineweather.features.settings.viewmodels.SettingsViewModel
-import com.iti.fineweather.features.weather.helpers.Constants
+import com.iti.fineweather.features.common.helpers.Constants
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
