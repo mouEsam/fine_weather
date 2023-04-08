@@ -6,4 +6,5 @@ object Constants {
     const val MILES_HOUR_IN_M_SEC = 2.237f
     const val BACKGROUND_COLOR_ALPHA = 0.6f
     const val REFRESH_INTERVAL_MILLIS = 10 * 60 * 1000L
+    const val USE_OVERLAY_ACTIVITY = false
 }
