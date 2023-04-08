@@ -512,7 +512,7 @@ fun HourlyWeather(
     ) {
         value = LocalTime.now(timeZoneState)
         while (isActive) {
-            val nextHour = value.withMinute(0).withHour(value.hour + 1)
+            val nextHour = value.withMinute(0).plusHours(1)
             withContext(Dispatchers.Default) { delay(Duration.between(value, nextHour).toMillis()) }
             value = nextHour
         }

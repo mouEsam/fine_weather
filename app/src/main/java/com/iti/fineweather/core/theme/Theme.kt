@@ -39,7 +39,7 @@ fun FineWeatherTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).window.also { window ->
+            (view.context as? Activity)?.window?.also { window ->
                 window.statusBarColor = Color.Transparent.toArgb()
                 WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
             }

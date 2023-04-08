@@ -10,14 +10,19 @@ import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresPermission
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.work.ForegroundInfo
+import com.iti.fineweather.BuildConfig
 import com.iti.fineweather.R
-import com.iti.fineweather.features.alerts.AlertsOverlayActivity
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
+import com.iti.fineweather.features.alerts.helpers.OverlayWindow
+import com.iti.fineweather.features.alerts.views.AlertsOverlayActivity
+import com.iti.fineweather.features.weather.helpers.Constants
 import com.iti.fineweather.features.weather.helpers.WeatherDataMapper
 import com.iti.fineweather.features.weather.models.WeatherAlert
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -29,6 +34,7 @@ import javax.inject.Singleton
 class WeatherAlertsNotifier @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val weatherDataMapper: WeatherDataMapper,
+    private val overlayWindow: OverlayWindow,
 ) {
     companion object {
         private const val CHANNEL_ID = "weather_alerts_notification_channel"
@@ -52,14 +58,20 @@ class WeatherAlertsNotifier @Inject constructor(
         }
     }
 
-    fun notifyForAlertsOverlayImpl(
+    private fun notifyForAlertsOverlayImpl(
         alerts: List<WeatherAlert>,
         alertPreferences: UserWeatherAlert,
     ) {
-        applicationContext.startActivity(Intent(applicationContext, AlertsOverlayActivity::class.java).apply {
-            putExtra(AlertsOverlayActivity.ALERTS, ArrayList(weatherDataMapper.mapAlerts(alerts)))
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        })
+        if (Constants.USE_OVERLAY_ACTIVITY) {
+            applicationContext.startActivity(Intent(applicationContext, AlertsOverlayActivity::class.java).apply {
+                putExtra(AlertsOverlayActivity.ALERTS, ArrayList(weatherDataMapper.mapAlerts(alerts)))
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+        } else {
+            applicationContext.startService(Intent(applicationContext, OverlayWindowService::class.java).apply {
+                putExtra(OverlayWindowService.ALERTS, ArrayList(weatherDataMapper.mapAlerts(alerts)))
+            })
+        }
     }
 
     private fun notifyForAlertsNotificationImpl(
