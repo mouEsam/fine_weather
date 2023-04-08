@@ -28,7 +28,7 @@ class WeatherDataMapper @Inject constructor() {
             now = mapWeatherDataToViewData(data.currentWeather, preferences),
             daily = mapDaily(data.dailyWeather, preferences),
             hourly = mapHourly(data.hourlyWeather, timeZone, preferences),
-            alerts = mapAlerts(data.alerts, timeZone, preferences),
+            alerts = mapAlerts(data.alerts, timeZone),
         )
     }
 
@@ -158,15 +158,18 @@ class WeatherDataMapper @Inject constructor() {
         }
     }
 
-    private fun mapAlerts(
-        alerts: List<WeatherAlert>?,
-        timeZone: TimeZone,
-        preferences: UserPreferences
-    ): List<WeatherAlertView> {
-        return alerts?.map { mapAlert(it, timeZone, preferences) } ?: listOf()
+    fun mapAlerts(alerts: List<WeatherAlert>): List<WeatherAlertView> {
+        return mapAlerts(alerts, TimeZone.getDefault())
     }
 
-    private fun mapAlert(alert: WeatherAlert, timeZone: TimeZone, preferences: UserPreferences): WeatherAlertView {
+    private fun mapAlerts(
+        alerts: List<WeatherAlert>?,
+        timeZone: TimeZone
+    ): List<WeatherAlertView> {
+        return alerts?.map { mapAlert(it, timeZone) } ?: listOf()
+    }
+
+    private fun mapAlert(alert: WeatherAlert, timeZone: TimeZone): WeatherAlertView {
         val start = ZonedDateTime.ofInstant(
             Instant.ofEpochSecond(alert.start),
             timeZone.toZoneId()

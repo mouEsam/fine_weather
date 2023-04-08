@@ -3,13 +3,17 @@ package com.iti.fineweather.features.splash.views
 import android.Manifest
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -59,6 +63,9 @@ fun SplashScreen(
 ) {
     val configurations = LocalConfiguration.current
     val navController = LocalNavigation.navController
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarState = LocalScaffold.snackbarHost
+    val noGpsError = stringResource(R.string.error_location_permission)
     val permissions = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -68,8 +75,13 @@ fun SplashScreen(
         @SuppressLint("MissingPermission")
         if (permissions.any { p -> p.value }) {
             settingsViewModel.updateGpsLocation()
+        } else {
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noGpsError)
+            }
         }
     }
+
     val userPreferencesState by settingsViewModel.uiState.collectAsState()
     if (userPreferencesState is UiState.Loaded) {
         val userPreferences = userPreferencesState.data!!
@@ -100,7 +112,17 @@ fun SplashScreen(
                     containerColor = LocalTheme.colors.main.copy(alpha = Constants.BACKGROUND_COLOR_ALPHA),
                     contentColor = LocalTheme.colors.mainContent,
                 ) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) { }
+                    Box (
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Image(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_launcher_foreground),
+                            contentDescription = null,
+//                            alignment = Alignment.Center,
+                            modifier = Modifier.padding(innerPadding)
+                        )
+                    }
                 }
             }
         }

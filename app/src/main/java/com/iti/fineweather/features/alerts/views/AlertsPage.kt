@@ -2,7 +2,10 @@ package com.iti.fineweather.features.alerts.views
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.iti.fineweather.R
+import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.error
@@ -34,6 +38,7 @@ import com.iti.fineweather.features.alerts.viewmodels.WeatherAlertsViewModel
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.common.views.AppRadioButton
 import com.iti.fineweather.features.common.views.ManualActionLock
+import com.iti.fineweather.features.common.views.showErrorSnackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.*
@@ -45,14 +50,24 @@ fun AlertsPage(
     alertsViewModel: WeatherAlertsViewModel = hiltViewModel(),
     newWeatherAlertViewModel: NewWeatherAlertViewModel = hiltViewModel(),
 ) {
-    val state: UiState<List<UserWeatherAlert>> by alertsViewModel.uiState.collectAsState()
+    val uiState by alertsViewModel.uiState.collectAsState()
+    showErrorSnackbar(uiState)
+    newAlertContent(alertsViewModel)
 
     AlertsContent(
         modifier = modifier,
         alertsViewModel = alertsViewModel,
         newWeatherAlertViewModel = newWeatherAlertViewModel,
-        alertsState = state,
+        alertsState = uiState,
     )
+}
+
+@Composable
+fun newAlertContent(
+    alertsViewModel: WeatherAlertsViewModel,
+) {
+    val uiState by alertsViewModel.operationState.collectAsState(UiState.Initial())
+    showErrorSnackbar(uiState)
 }
 
 @Composable
@@ -301,24 +316,56 @@ fun NewAlertForm(
     newAlertTemplate: WeatherAlertTemplate
 ) {
     val context = LocalContext.current
-    val alarmPermissions = rememberPermissionState(android.Manifest.permission.SYSTEM_ALERT_WINDOW) { granted ->
-        if (granted) {
-            newWeatherAlertViewModel.submit()
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarState = LocalScaffold.snackbarHost
+    val noNotificationsError = stringResource(R.string.error_notifications_permission)
+    val noOverlayError = stringResource(R.string.error_overlay_permission)
+
+    fun onAlarmGranted() {
+        newWeatherAlertViewModel.submit()
+    }
+
+    fun onNotificationGranted() {
+        newWeatherAlertViewModel.submit()
+    }
+
+    val alarmPermission = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (Settings.canDrawOverlays(context)) {
+            onAlarmGranted()
         } else {
-            context.startActivity(
-                Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + context.packageName)
-                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noOverlayError)
+            }
+        }
+    }
+
+    fun requestAlarmPermission() {
+        if (!Settings.canDrawOverlays(context)) {
+            val intent = Intent(
+                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                Uri.parse("package:" + context.packageName)
             )
+            alarmPermission.launch(intent)
+        } else {
+            onAlarmGranted()
         }
     }
 
     val notificationPermissions = rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS) { granted ->
         if (granted) {
-            newWeatherAlertViewModel.submit()
+            onNotificationGranted()
         } else {
-            // TODO: show snackbar
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noNotificationsError)
+            }
+        }
+    }
+
+    fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notificationPermissions.launchPermissionRequest()
+        } else {
+            onNotificationGranted()
         }
     }
 
@@ -483,9 +530,9 @@ fun NewAlertForm(
                     onClick = {
                         if (newWeatherAlertViewModel.validate()) {
                             if (newAlertTemplate.alarmEnabled == true) {
-                                alarmPermissions.launchPermissionRequest()
+                                requestAlarmPermission()
                             } else {
-                                notificationPermissions.launchPermissionRequest()
+                                requestNotificationPermission()
                             }
                         }
                     }
@@ -539,9 +586,10 @@ fun AlertDatePickerDialog(
         },
         onDismissRequest = dismiss,
     ) {
+        val today = remember { LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() }
         DatePicker(
             state = datePickerState,
-            dateValidator = { date -> date > System.currentTimeMillis() }
+            dateValidator = { date -> date >= today }
         )
     }
 }
@@ -624,7 +672,6 @@ private fun ClickableConfiguration(
         content()
     }
 }
-
 
 
 @Composable

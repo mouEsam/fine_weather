@@ -17,6 +17,12 @@ data class InvalidStateException(@StringRes val errorRes: Int) : AppException() 
         get() = stringResource(errorRes)
 }
 
+data class InternetFetchException(@StringRes val fetchedResourceName: Int) : AppException() {
+    override val error: String
+        @Composable
+        get() = stringResource(R.string.error_internet_fetch, stringResource(fetchedResourceName))
+}
+
 data class MissingValueException(@StringRes val valueName: Int) : AppException() {
     override val error: String
         @Composable

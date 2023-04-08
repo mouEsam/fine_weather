@@ -21,11 +21,13 @@ import androidx.lifecycle.lifecycleScope
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.iti.fineweather.R
+import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.settings.models.UserPreferences
@@ -41,24 +43,24 @@ fun SettingsPage(
     modifier: Modifier = Modifier,
     settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
-    val opState by settingsViewModel.operationState.collectAsState()
-    LaunchedEffect(key1 = opState) {
-        when (opState) {
-            is UiState.Error -> {
-                // TODO: handle error
-            }
 
-            else -> {}
-        }
-    }
-
-    val settingsUiState by settingsViewModel.uiState.collectAsState()
+    val uiState by settingsViewModel.uiState.collectAsState()
+    showErrorSnackbar(uiState)
+    newSettingsContent(settingsViewModel)
 
     SettingsContent(
         modifier = modifier,
         settingsViewModel = settingsViewModel,
-        settingsUiState = settingsUiState,
+        settingsUiState = uiState,
     )
+}
+
+@Composable
+fun newSettingsContent(
+    settingsViewModel: SettingsViewModel,
+) {
+    val uiState by settingsViewModel.operationState.collectAsState(UiState.Initial())
+    showErrorSnackbar(uiState)
 }
 
 @Composable
@@ -90,6 +92,9 @@ fun SettingsList(
     settings: UserPreferences?,
     settingsViewModel: SettingsViewModel,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarState = LocalScaffold.snackbarHost
+    val noGpsError = stringResource(R.string.error_location_permission)
     val permissions = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -100,7 +105,9 @@ fun SettingsList(
         if (permissions.any { p -> p.value }) {
             settingsViewModel.updateGpsLocation()
         } else {
-            // TODO: on failure
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noGpsError)
+            }
         }
     }
 
@@ -153,9 +160,11 @@ fun SettingsList(
                             }
                         }
                     }
+
                     UserPreferences.LocationType.GPS -> {
                         permissions.launchMultiplePermissionRequest()
                     }
+
                     else -> {}
                 }
             },

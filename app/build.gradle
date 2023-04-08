@@ -69,6 +69,7 @@ configurations {
 
 dependencies {
 
+    implementation 'com.google.android.material:material:1.4.+'
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$jdk_desuger_version"
 
     implementation "androidx.core:core-ktx:$core_version"
