@@ -54,6 +54,7 @@ import com.iti.fineweather.features.alerts.views.AlertsScreen
 import com.iti.fineweather.features.bookmarks.views.BookmarksScreen
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.common.views.BackButton
+import com.iti.fineweather.features.common.views.Background
 import com.iti.fineweather.features.settings.views.SettingsScreen
 import com.iti.fineweather.features.weather.models.*
 import com.iti.fineweather.features.weather.viewmodels.WeatherViewModel
@@ -104,236 +105,261 @@ fun WeatherContent(
 ) {
     val navController = LocalNavigation.navController
     val weatherViewData = weatherViewDataState.data
-    val color = weatherViewDataState.data?.now?.weatherState?.color ?: LocalTheme.colors.main
+    val color = weatherViewData?.now?.weatherState?.color ?: LocalTheme.colors.main
     val colorSwatch = getColorPalette(
         color = color,
         preferLight = weatherViewData?.now?.weatherState?.isDay != false,
     )
-    val backgroundColor = colorSwatch?.rgb?.let { Color(it) } ?: color
-    val foregroundColor = colorSwatch?.bodyTextColor?.let { Color(it) } ?: LocalTheme.colors.mainContent
-    Surface(
-        color = Color.Unspecified,
-        contentColor = backgroundColor,
-        modifier = Modifier
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(backgroundColor, foregroundColor)
+    val backgroundColor = colorSwatch?.rgb?.let { Color(it).copy(alpha = 1.0f) } ?: color
+    val foregroundColor =
+        colorSwatch?.bodyTextColor?.let { Color(it).copy(alpha = 1.0f) } ?: LocalTheme.colors.mainContent
+    Box {
+        Background(
+            painter = weatherViewData?.now?.weatherState?.bg?.let { painterResource(it) },
+        )
+        Surface(
+            color = Color.Unspecified,
+            contentColor = backgroundColor,
+            modifier = Modifier
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            backgroundColor.copy(alpha = 0.7f),
+                            foregroundColor.copy(alpha = 0.5f)
+                        )
+                    )
                 )
-            )
-            .then(modifier),
-    ) {
-        val dateFormatter = rememberLocalizedDateTimeFormatter("yyyy-MM-dd")
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally,
+                .then(modifier),
         ) {
-            Surface(
-                color = Color.Unspecified,
-                contentColor = foregroundColor,
+            val dateFormatter = rememberLocalizedDateTimeFormatter("yyyy-MM-dd")
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().weight(1.0f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Surface(
+                    color = Color.Unspecified,
+                    contentColor = foregroundColor,
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth().padding(
-                            vertical = LocalTheme.spaces.medium,
-                        ).padding(
-                            start = LocalTheme.spaces.large,
-                            end = LocalTheme.spaces.small,
-                        ),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
+                        modifier = Modifier.fillMaxWidth().weight(1.0f),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        if (!showControls) {
-                            BackButton()
-                        }
                         Row(
-                            modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
+                            modifier = Modifier.fillMaxWidth().padding(
+                                vertical = LocalTheme.spaces.medium,
+                            ).padding(
+                                start = LocalTheme.spaces.large,
+                                end = LocalTheme.spaces.small,
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.LocationOn,
-                                contentDescription = null,
-                                modifier = Modifier.alignByBaseline().padding(top = 5.dp),
-                            )
+                            if (!showControls) {
+                                BackButton()
+                            }
+                            Row(
+                                modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.LocationOn,
+                                    contentDescription = null,
+                                    modifier = Modifier.alignByBaseline().padding(top = 5.dp),
+                                )
+                                Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
+                                Text(
+                                    modifier = Modifier.alignByBaseline().weight(1.0f),
+                                    text = weatherViewData?.location?.city
+                                        ?: stringResource(R.string.placeholder_location),
+                                    style = LocalTheme.typography.title,
+                                )
+                            }
+                            if (weatherViewDataState is UiState.Loading) {
+                                CircularProgressIndicator(
+                                    color = foregroundColor,
+                                )
+                            } else if (weatherViewDataState is UiState.Error) {
+                                IconButton(
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.error,
+                                    ),
+                                    onClick = {
+                                        Timber.d("ASD")
+                                        weatherViewModel.refetchData()
+                                    },
+                                    content = {
+                                        Icon(
+                                            imageVector = Icons.Outlined.ErrorOutline,
+                                            contentDescription = null,
+                                        )
+                                    }
+                                )
+                            }
                             Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
-                            Text(
-                                modifier = Modifier.alignByBaseline().weight(1.0f),
-                                text = weatherViewData?.location?.city ?: stringResource(R.string.placeholder_location),
-                                style = LocalTheme.typography.title,
-                            )
-                        }
-                        if (weatherViewDataState is UiState.Loading) {
-                            CircularProgressIndicator(
-                                color = foregroundColor,
-                            )
-                        } else if (weatherViewDataState is UiState.Error) {
-                            IconButton(
-                                onClick = {
-                                    Timber.d("ASD")
-                                    weatherViewModel.refetchData()
-                                },
-                                content = {
+                            if (showControls) {
+                                IconButton(onClick = {
+                                    navController.navigate(SettingsScreen.routeInfo.toNavRequest())
+                                }) {
                                     Icon(
-                                        imageVector = Icons.Outlined.ErrorOutline,
+                                        imageVector = Icons.Outlined.Settings,
                                         contentDescription = null,
                                     )
                                 }
+                                IconButton(onClick = {
+                                    navController.navigate(BookmarksScreen.routeInfo.toNavRequest())
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Bookmark,
+                                        contentDescription = null,
+                                    )
+                                }
+                                IconButton(onClick = {
+                                    navController.navigate(AlertsScreen.routeInfo.toNavRequest())
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.CrisisAlert,
+                                        contentDescription = null,
+                                    )
+                                }
+                            }
+                        }
+
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.Start)
+                                .padding(start = LocalTheme.spaces.large)
+                        ) {
+                            Text(
+                                text = weatherViewData?.let { getCurrentDate(it.timezone) }
+                                    ?: stringResource(R.string.placeholder_time),
+                                style = LocalTheme.typography.bodyBold,
+                            )
+                            Text(
+                                text = weatherViewData?.let { getCurrentTimeText(it.timezone) }
+                                    ?: stringResource(R.string.placeholder_time),
+                                style = LocalTheme.typography.bodyBold,
                             )
                         }
-                        Spacer(modifier = Modifier.width(LocalTheme.spaces.medium))
-                        if (showControls) {
-                            IconButton(onClick = {
-                                navController.navigate(SettingsScreen.routeInfo.toNavRequest())
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Settings,
-                                    contentDescription = null,
-                                )
-                            }
-                            IconButton(onClick = {
-                                navController.navigate(BookmarksScreen.routeInfo.toNavRequest())
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Bookmark,
-                                    contentDescription = null,
-                                )
-                            }
-                            IconButton(onClick = {
-                                navController.navigate(AlertsScreen.routeInfo.toNavRequest())
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.CrisisAlert,
-                                    contentDescription = null,
-                                )
-                            }
+
+                        WeatherStatusIcon(weatherViewData)
+
+                        Text(
+                            text = weatherViewData?.now?.weatherState?.main
+                                ?: stringResource(R.string.placeholder_weather),
+                            style = LocalTheme.typography.subtitle,
+                        )
+
+                        TemperatureItem(
+                            style = LocalTheme.typography.headerLarge,
+                            temp = weatherViewData?.now?.temperature,
+                            units = weatherViewData?.units,
+                        )
+
+                        WeatherParamRow(
+                            weatherData = weatherViewData?.now,
+                            weatherUnitData = weatherViewData?.units,
+                            modifier = Modifier
+                                .padding(horizontal = LocalTheme.spaces.large)
+                                .clip(
+                                    shape = LocalTheme.shapes.smallRoundedCornerShape,
+                                ).background(backgroundColor.copy(alpha = 0.4f))
+                                .padding(LocalTheme.spaces.large),
+                            style = LocalTheme.typography.action
+                        )
+                    }
+                }
+
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = LocalTheme.spaces.medium),
+                    verticalArrangement = Arrangement.spacedBy(LocalTheme.spaces.medium),
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    var selectedTab by rememberSaveable { mutableStateOf(0) }
+                    val items = listOf(
+                        stringResource(R.string.home_tab_today, dateFormatter.format(LocalDate.now())),
+                        stringResource(R.string.home_tab_this_week),
+                        stringResource(R.string.home_tab_alerts)
+                    )
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = LocalTheme.spaces.large),
+                        horizontalArrangement = Arrangement.spacedBy(
+                            space = LocalTheme.spaces.large,
+                            alignment = Alignment.Start,
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                    ) {
+                        items(count = items.size) { index ->
+                            val selected = index == selectedTab
+                            Text(
+                                text = items[index],
+                                modifier = Modifier
+                                    .clip(
+                                        shape = LocalTheme.shapes.smallRoundedCornerShape,
+                                    ).background(
+                                        color = foregroundColor.copy(alpha = 0.5f),
+                                    )
+                                    .clickable(enabled = !selected) {
+                                        selectedTab = index
+                                    }.padding(LocalTheme.spaces.small),
+                                fontWeight = if (selected) FontWeight.W600 else FontWeight.W300,
+                                style = LocalTheme.typography.body,
+                            )
                         }
                     }
+                    AnimatedContent(
+                        targetState = selectedTab, transitionSpec = {
+                            if (targetState > initialState) {
+                                slideInHorizontally { width -> width } + fadeIn() with slideOutHorizontally { width -> -width } + fadeOut()
+                            } else {
+                                slideInHorizontally { width -> -width } + fadeIn() with slideOutHorizontally { width -> width } + fadeOut()
+                            }.using(
+                                SizeTransform(clip = false)
+                            )
+                        }, modifier = Modifier.padding(bottom = LocalTheme.spaces.small)
+                    ) { currentSelected ->
+                        when (currentSelected) {
+                            0 -> HourlyWeather(
+                                contentColor = foregroundColor,
+                                weatherUnitData = weatherViewData?.units,
+                                weatherData = weatherViewData?.hourly,
+                            )
 
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = LocalTheme.spaces.large)
-                    ) {
-                        Text(
-                            text = weatherViewData?.let { getCurrentDate(it.timezone) }
-                                ?: stringResource(R.string.placeholder_time),
-                            style = LocalTheme.typography.bodyBold,
-                        )
-                        Text(
-                            text = weatherViewData?.let { getCurrentTimeText(it.timezone) }
-                                ?: stringResource(R.string.placeholder_time),
-                            style = LocalTheme.typography.bodyBold,
-                        )
-                    }
+                            1 -> DailyWeather(
+                                contentColor = foregroundColor,
+                                weatherUnitData = weatherViewData?.units,
+                                weatherData = weatherViewData?.daily,
+                            )
 
-                    val painter: Painter = if (weatherViewData != null) {
-                        val context = LocalContext.current
-                        val weatherState = weatherViewData.now.weatherState
-                        rememberAsyncImagePainter(
-                            model = ImageRequest.Builder(context).decoderFactory(SvgDecoder.Factory())
-                                .data("android.resource://${context.applicationContext.packageName}/${weatherState.icon}")
-                                .size(Size.ORIGINAL).build()
-                        )
-                    } else {
-                        painterResource(R.drawable.not_available)
-                    }
-
-                    Image(
-                        painter = painter,
-                        contentDescription = null,
-                        modifier = Modifier.fillMaxWidth(0.4f),
-                    )
-
-                    Text(
-                        text = weatherViewData?.now?.weatherState?.main ?: stringResource(R.string.placeholder_weather),
-                        style = LocalTheme.typography.subtitle,
-                    )
-
-                    TemperatureItem(
-                        style = LocalTheme.typography.headerLarge,
-                        temp = weatherViewData?.now?.temperature,
-                        units = weatherViewData?.units,
-                    )
-
-                    WeatherParamRow(
-                        weatherData = weatherViewData?.now,
-                        weatherUnitData = weatherViewData?.units,
-                        modifier = Modifier
-                            .padding(horizontal = LocalTheme.spaces.large)
-                            .clip(
-                                shape = LocalTheme.shapes.smallRoundedCornerShape,
-                            ).background(backgroundColor.copy(alpha = 0.4f))
-                            .padding(LocalTheme.spaces.large),
-                        style = LocalTheme.typography.action
-                    )
-                }
-            }
-
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(vertical = LocalTheme.spaces.medium),
-                verticalArrangement = Arrangement.spacedBy(LocalTheme.spaces.medium),
-                horizontalAlignment = Alignment.Start,
-            ) {
-                var selectedTab by rememberSaveable { mutableStateOf(0) }
-                val items = listOf(
-                    stringResource(R.string.home_tab_today, dateFormatter.format(LocalDate.now())),
-                    stringResource(R.string.home_tab_this_week),
-                    stringResource(R.string.home_tab_alerts)
-                )
-                LazyRow(
-                    contentPadding = PaddingValues(horizontal = LocalTheme.spaces.large),
-                    horizontalArrangement = Arrangement.spacedBy(
-                        space = LocalTheme.spaces.xLarge,
-                        alignment = Alignment.Start,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    items(count = items.size) { index ->
-                        val selected = index == selectedTab
-                        Text(
-                            text = items[index],
-                            modifier = Modifier.clickable(enabled = !selected) {
-                                selectedTab = index
-                            }.padding(LocalTheme.spaces.small),
-                            fontWeight = if (selected) FontWeight.W600 else FontWeight.W300,
-                            style = LocalTheme.typography.body,
-                        )
-                    }
-                }
-                AnimatedContent(
-                    targetState = selectedTab, transitionSpec = {
-                        if (targetState > initialState) {
-                            slideInHorizontally { width -> width } + fadeIn() with slideOutHorizontally { width -> -width } + fadeOut()
-                        } else {
-                            slideInHorizontally { width -> -width } + fadeIn() with slideOutHorizontally { width -> width } + fadeOut()
-                        }.using(
-                            SizeTransform(clip = false)
-                        )
-                    }, modifier = Modifier.padding(bottom = LocalTheme.spaces.small)
-                ) { currentSelected ->
-                    when (currentSelected) {
-                        0 -> HourlyWeather(
-                            contentColor = foregroundColor,
-                            weatherUnitData = weatherViewData?.units,
-                            weatherData = weatherViewData?.hourly,
-                        )
-
-                        1 -> DailyWeather(
-                            contentColor = foregroundColor,
-                            weatherUnitData = weatherViewData?.units,
-                            weatherData = weatherViewData?.daily,
-                        )
-
-                        else -> Alerts(
-                            contentColor = foregroundColor,
-                            alerts = weatherViewData?.alerts,
-                        )
+                            else -> Alerts(
+                                contentColor = foregroundColor,
+                                alerts = weatherViewData?.alerts,
+                            )
+                        }
                     }
                 }
             }
         }
     }
+}
+
+@Composable
+fun WeatherStatusIcon(weatherViewData: WeatherViewData?) {
+    val painter: Painter = if (weatherViewData != null) {
+        val context = LocalContext.current
+        val weatherState = weatherViewData.now.weatherState
+        rememberAsyncImagePainter(
+            model = ImageRequest.Builder(context).decoderFactory(SvgDecoder.Factory())
+                .data("android.resource://${context.applicationContext.packageName}/${weatherState.icon}")
+                .size(Size.ORIGINAL).build()
+        )
+    } else {
+        painterResource(R.drawable.not_available)
+    }
+
+    Image(
+        painter = painter,
+        contentDescription = null,
+        modifier = Modifier.fillMaxWidth(0.4f),
+    )
 }
 
 @Composable
@@ -556,12 +582,14 @@ fun Alerts(
                             text = alert?.event ?: stringResource(R.string.placeholder_event),
                             style = LocalTheme.typography.action,
                         )
-                        val startsAt = alert?.start?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
+                        val startsAt =
+                            alert?.start?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
                         Text(
                             text = stringResource(R.string.home_tab_alert_start_at, startsAt),
                             style = LocalTheme.typography.body,
                         )
-                        val endsAt = alert?.end?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
+                        val endsAt =
+                            alert?.end?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
                         Text(
                             text = stringResource(R.string.home_tab_alert_until, endsAt),
                             style = LocalTheme.typography.body,

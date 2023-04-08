@@ -100,6 +100,8 @@ class WeatherDataMapper @Inject constructor() {
                 iconUrlX2 = "https://openweathermap.org/img/wn/${icon}@4x.png",
                 dayIcon = mapIconToRawRes(icon, true),
                 nightIcon = mapIconToRawRes(icon, false),
+                dayBG = mapIconToBG(icon, true),
+                nightBG = mapIconToBG(icon, false),
             )
         }
         val tempObj = preferences.temperatureUnit.convert(remoteData.temp)
@@ -114,6 +116,18 @@ class WeatherDataMapper @Inject constructor() {
         )
     }
 
+    /*
+    * 01d.png 	01n.png 	clear sky
+    * 02d.png 	02n.png 	few clouds
+    * 03d.png 	03n.png 	scattered clouds
+    * 04d.png 	04n.png 	broken clouds
+    * 09d.png 	09n.png 	shower rain
+    * 10d.png 	10n.png 	rain
+    * 11d.png 	11n.png 	thunderstorm
+    * 13d.png 	13n.png 	snow
+    * 50d.png 	50n.png 	mist
+    * */
+
     private fun mapIconToRawRes(icon: String, getDay: Boolean): Int {
         return when (icon.take(2)) {
             "01" -> if (getDay) R.raw.weather_01d else R.raw.weather_01n
@@ -126,6 +140,21 @@ class WeatherDataMapper @Inject constructor() {
             "13" -> if (getDay) R.raw.weather_13d else R.raw.weather_13n
             "50" -> if (getDay) R.raw.weather_50d else R.raw.weather_50n
             else -> if (getDay) R.raw.weather_01d else R.raw.weather_01n
+        }
+    }
+
+    private fun mapIconToBG(icon: String, getDay: Boolean): Int {
+        return when (icon.take(2)) {
+            "01" -> if (getDay) R.mipmap.morning else R.mipmap.morning_alt
+            "02" -> if (getDay) R.mipmap.sunset else R.mipmap.sunrise_alt
+            "03" -> if (getDay) R.mipmap.sunset_alt else R.mipmap.sunrise
+            "04" -> if (getDay) R.mipmap.sunset_alt_2 else R.mipmap.sunset_dark
+            "09" -> if (getDay) R.mipmap.wind else R.mipmap.wind_alt
+            "10" -> if (getDay) R.mipmap.rain else R.mipmap.rain
+            "11" -> if (getDay) R.mipmap.thunderstorm else R.mipmap.thunder
+            "13" -> if (getDay) R.mipmap.snowy else R.mipmap.snowy
+            "50" -> if (getDay) R.mipmap.fog else R.mipmap.fog
+            else -> if (getDay) R.mipmap.idle else R.mipmap.normal
         }
     }
 

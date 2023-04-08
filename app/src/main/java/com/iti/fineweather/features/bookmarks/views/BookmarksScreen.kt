@@ -17,6 +17,8 @@ import com.iti.fineweather.core.navigation.Screen
 import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.features.common.views.BackButton
 import com.iti.fineweather.features.common.views.BackButtonBalancer
+import com.iti.fineweather.features.common.views.Background
+import com.iti.fineweather.features.weather.helpers.Constants
 
 object BookmarksScreen : Screen<BookmarksScreen.BookmarksRoute> {
 
@@ -34,53 +36,55 @@ object BookmarksScreen : Screen<BookmarksScreen.BookmarksRoute> {
 @Composable
 @VisibleForTesting
 fun BookmarksScreen() {
-    val color = LocalTheme.colors.main
-    CompositionScaffoldProvider {
-        Scaffold(
-            snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
-            containerColor = color,
-            contentColor = LocalTheme.colors.mainContent,
-            contentWindowInsets = WindowInsets(top = 0.dp),
-            topBar = {
+    val color = LocalTheme.colors.main.copy(alpha = Constants.BACKGROUND_COLOR_ALPHA)
+    Background {
+        CompositionScaffoldProvider {
+            Scaffold(
+                snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
+                containerColor = color,
+                contentColor = LocalTheme.colors.mainContent,
+                contentWindowInsets = WindowInsets(top = 0.dp),
+                topBar = {
+                    Surface(
+                        color = color,
+                        contentColor = LocalTheme.colors.mainContent,
+                        modifier = Modifier
+                            .background(color)
+                            .statusBarsPadding()
+                    ) {
+                        TopAppBar(
+                            colors = TopAppBarDefaults.topAppBarColors(
+                                containerColor = color,
+                                titleContentColor = LocalTheme.colors.mainContent,
+                                navigationIconContentColor = LocalTheme.colors.mainContent,
+                            ),
+                            navigationIcon = {
+                                BackButton()
+                            },
+                            actions = { BackButtonBalancer() },
+                            title = {
+                                Text(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    text = stringResource(R.string.bookmarks_title),
+                                    style = LocalTheme.typography.title,
+                                    textAlign = TextAlign.Center,
+                                )
+                            }
+                        )
+                    }
+                },
+            ) { innerPadding ->
                 Surface(
                     color = color,
-                    contentColor = LocalTheme.colors.mainContent,
                     modifier = Modifier
-                        .background(color)
-                        .statusBarsPadding()
+                        .fillMaxSize()
+                        .background(color = color),
+                    contentColor = LocalTheme.colors.mainContent,
                 ) {
-                    TopAppBar(
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = color,
-                            titleContentColor = LocalTheme.colors.mainContent,
-                            navigationIconContentColor = LocalTheme.colors.mainContent,
-                        ),
-                        navigationIcon = {
-                            BackButton()
-                        },
-                        actions = { BackButtonBalancer() },
-                        title = {
-                            Text(
-                                modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(R.string.bookmarks_title),
-                                style = LocalTheme.typography.title,
-                                textAlign = TextAlign.Center,
-                            )
-                        }
+                    BookmarksPage(
+                        modifier = Modifier.padding(innerPadding)
                     )
                 }
-            },
-        ) { innerPadding ->
-            Surface(
-                color = color,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(color = color),
-                contentColor = LocalTheme.colors.mainContent,
-            ) {
-                BookmarksPage(
-                    modifier = Modifier.padding(innerPadding)
-                )
             }
         }
     }
