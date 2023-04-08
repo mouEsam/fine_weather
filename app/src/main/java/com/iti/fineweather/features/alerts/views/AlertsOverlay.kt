@@ -33,25 +33,30 @@ fun AlertsOverlay(
     alerts: List<WeatherAlertView>?,
     onClose: () -> Unit,
 ) {
-    val animationDuration = 200
+    val animationDuration = 1000
     val coroutineScope = rememberCoroutineScope()
-    var visible: Boolean by remember { mutableStateOf(true) }
-    AnimatedVisibility(
-        visible = visible,
-        enter = slideInVertically(animationSpec = tween(durationMillis = animationDuration)) { fullHight ->
-            -fullHight / 3
-        } + fadeIn(
-            animationSpec = tween(durationMillis = animationDuration)
-        ),
-        exit = slideOutHorizontally(animationSpec = spring(stiffness = Spring.StiffnessHigh)) {
-            200
-        } + fadeOut()
+    var visible: Boolean by remember { mutableStateOf(false) }
+
+    LaunchedEffect(true) {
+        visible = true
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(LocalTheme.spaces.large),
+        contentAlignment = Alignment.TopCenter,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(LocalTheme.spaces.large),
-            contentAlignment = Alignment.TopCenter,
+        AnimatedVisibility(
+            visible = visible,
+            enter = slideInVertically(animationSpec = tween(durationMillis = animationDuration)) { fullHeight ->
+                -fullHeight / 2
+            } + fadeIn(
+                animationSpec = tween(durationMillis = animationDuration)
+            ),
+            exit = slideOutVertically(animationSpec = spring(stiffness = Spring.StiffnessHigh)) { fullHeight ->
+                -fullHeight / 2
+            } + fadeOut()
         ) {
             Surface(
                 color = LocalTheme.colors.main,
@@ -102,6 +107,7 @@ fun AlertsOverlay(
             }
         }
     }
+
 
 }
 

@@ -1,4 +1,4 @@
-package com.iti.fineweather.features.weather.helpers
+package com.iti.fineweather.features.common.helpers
 
 object Constants {
     const val DECIMAL_PLACES: Int = 1

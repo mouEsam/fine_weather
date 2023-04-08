@@ -10,7 +10,7 @@ import com.iti.fineweather.features.common.helpers.connectivity.ConnectivityHelp
 import com.iti.fineweather.features.common.repositories.UserPreferencesRepository
 import com.iti.fineweather.features.settings.models.UserPreferences
 import com.iti.fineweather.features.settings.utils.toLocale
-import com.iti.fineweather.features.weather.helpers.Constants
+import com.iti.fineweather.features.common.helpers.Constants
 import com.iti.fineweather.features.weather.helpers.WeatherDataMapper
 import com.iti.fineweather.features.weather.models.RemoteWeatherResponse
 import com.iti.fineweather.features.weather.models.WeatherLocation
@@ -21,7 +21,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.internal.synchronized
-import kotlinx.coroutines.sync.Mutex
 import javax.inject.Inject
 
 

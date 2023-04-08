@@ -4,7 +4,7 @@ import androidx.annotation.StringRes
 import com.iti.fineweather.R
 import com.iti.fineweather.features.common.utils.round
 import com.iti.fineweather.features.settings.models.UserPreferences
-import com.iti.fineweather.features.weather.helpers.Constants
+import com.iti.fineweather.features.common.helpers.Constants
 import com.iti.fineweather.features.weather.models.Temperature
 
 @get:StringRes

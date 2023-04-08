@@ -24,7 +24,7 @@
         tools:targetApi="tiramisu">
 
         <activity
-            android:name=".features.alerts.AlertsOverlayActivity"
+            android:name=".features.alerts.views.AlertsOverlayActivity"
             android:exported="false"
             android:taskAffinity="com.iti.fineweather.alerts"
             android:theme="@style/Theme.FineWeather.AlertOverlay" />

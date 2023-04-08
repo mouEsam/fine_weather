@@ -18,7 +18,7 @@ import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.features.common.views.BackButton
 import com.iti.fineweather.features.common.views.BackButtonBalancer
 import com.iti.fineweather.features.common.views.Background
-import com.iti.fineweather.features.weather.helpers.Constants
+import com.iti.fineweather.features.common.helpers.Constants
 
 object BookmarksScreen : Screen<BookmarksScreen.BookmarksRoute> {
 
