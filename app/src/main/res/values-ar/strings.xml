@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Fine Weather</string>
+    <string name="placeholder">Placeholder</string>
+    <string name="select">اختر</string>
+    <!--  Weather  -->
+    <string name="weather_data">بيانات الطقس</string>
+    <!--  Splash  -->
+    <string name="splash_select_language">اختار لغتك</string>
+    <string name="splash_location_title">المكان</string>
+    <string name="splash_location_text">كيف تريد معرفة مكانك الحالي</string>
+    <!--  Home  -->
+    <string name="home_tab_today">اليوم %s</string>
+    <string name="home_tab_this_week">الاسبوع الجاري</string>
+    <string name="home_tab_summery">الخلاصة</string>
+    <string name="home_tab_alerts">التنبيهات</string>
+    <string name="home_tab_alert_start_at">يبدأ في %s</string>
+    <string name="home_tab_alert_until">ينتهي في %s</string>
+    <string name="home_tab_alert_source">المصدر: %s</string>
+    <string name="home_tab_alert_no_alerts">لا يوجد اشعارات للمستقبل القريب</string>
+    <!--  Alerts  -->
+    <string name="alerts_no_weather_alerts">يبدو انه لا بوجد لديك تنبيهات للطقس للمستقبل القريب
+    </string>
+    <string name="alerts_title">تنبيهات الطقس</string>
+    <string name="alerts_empty">يبدو انه لا بوجد لديك تنبيهات للطقس مجدولة للمستقبل القريب</string>
+    <string name="alerts_add_alert">اضف تنبيه</string>
+    <string name="alerts_add_submit">احفظ التنبيه</string>
+    <string name="alerts_alert_unspecified">غير معين</string>
+    <string name="alerts_alert_type">نوع التنبيه</string>
+    <string name="alerts_alert_type_notification">اشعار</string>
+    <string name="alerts_alert_type_alarm">منبه</string>
+    <string name="alerts_repetition_type">نوع التكرار</string>
+    <string name="alerts_repetition_type_daily">يوميا</string>
+    <string name="alerts_repetition_type_once">مرة واحدة</string>
+    <string name="alerts_time">وقت التنبيه</string>
+    <string name="alerts_start_date">تاريخ البداية</string>
+    <string name="alerts_end_date">تاريخ النهاية</string>
+    <string name="alerts_delete_prompt_title">حذف التنبيه</string>
+    <string name="alerts_delete_prompt_message">هل انت متاكد انك تريد حذف هذا التنبيه ؟</string>
+    <string name="alerts_notification_operation_channel_desc">اشعارات عن الطقس</string>
+    <string name="alerts_notification_operation_title">@string/app_name</string>
+    <string name="alerts_notification_operation_text">يتم جلب اخر بيانات الطقس</string>
+    <!--  Bookmarks  -->
+    <string name="bookmarks_title">الاماكن المحفوظة</string>
+    <string name="bookmarks_empty">يبدو انه لا يوجد لديك اماكن محفوظة</string>
+    <string name="bookmarks_loading_timezone">تحميل بيانات المنطقة الزمنية</string>
+    <string name="bookmarks_add_bookmark">اضافة مكان</string>
+    <string name="bookmarks_delete_prompt_title">حذف مكان</string>
+    <string name="bookmarks_delete_prompt_message">هل انت متاكد انك تريد حذف هذا المكان ؟</string>
+    <!--  Settings  -->
+    <string name="settings_title">الاعدادات</string>
+    <string name="settings_location_source">مصدر المكان</string>
+    <string name="settings_location_source_map">الخريطة</string>
+    <string name="settings_location_source_gps">GPS</string>
+    <string name="settings_temperature_unit">وحدة الحرارة</string>
+    <string name="settings_temperature_unit_kelvin">كيلفن (K)</string>
+    <string name="settings_temperature_unit_celsius">سليسيوس (°C)</string>
+    <string name="settings_temperature_unit_fahrenheit">فهرينهايت (°F)</string>
+    <string name="settings_wind_speed_unit">وحدة سرعة الرياح</string>
+    <string name="settings_wind_speed_unit_meter_s">متر\\ثانية</string>
+    <string name="settings_wind_speed_unit_miles_hr">ميل\\ساعة</string>
+    <string name="settings_language">اللغة</string>
+    <string name="settings_language_ar">اللغة العربية</string>
+    <string name="settings_language_en">English</string>
+    <!--  Map  -->
+    <string name="map_search">البحث</string>
+    <string name="map_select_place">اختر %s</string>
+</resources>

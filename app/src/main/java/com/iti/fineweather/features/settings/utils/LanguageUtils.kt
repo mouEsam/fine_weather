@@ -8,7 +8,7 @@ import java.util.*
 
 fun UserPreferences.Language.toLocale(): Locale {
     return when (this) {
-        UserPreferences.Language.ARABIC -> Locale("ar")
+        UserPreferences.Language.ARABIC -> Locale.forLanguageTag("ar")
         UserPreferences.Language.ENGLISH -> Locale.ENGLISH
         UserPreferences.Language.UNRECOGNIZED -> Locale.ENGLISH
     }

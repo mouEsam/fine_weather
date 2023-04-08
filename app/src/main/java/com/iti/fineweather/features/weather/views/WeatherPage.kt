@@ -62,7 +62,6 @@ import com.iti.fineweather.features.weather.viewmodels.WeatherViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -183,7 +182,6 @@ fun WeatherContent(
                                         contentColor = MaterialTheme.colorScheme.error,
                                     ),
                                     onClick = {
-                                        Timber.d("ASD")
                                         weatherViewModel.refetchData()
                                     },
                                     content = {
@@ -243,7 +241,7 @@ fun WeatherContent(
                         WeatherStatusIcon(weatherViewData)
 
                         Text(
-                            text = weatherViewData?.now?.weatherState?.main
+                            text = weatherViewData?.now?.weatherState?.description
                                 ?: stringResource(R.string.placeholder_weather),
                             style = LocalTheme.typography.subtitle,
                         )

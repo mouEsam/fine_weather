@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.core.view.WindowCompat
 import com.iti.fineweather.core.navigation.AppNavigation
 import com.iti.fineweather.core.theme.FineWeatherTheme
+import com.iti.fineweather.core.utils.AppLayoutDirection
 import com.iti.fineweather.features.alerts.views.AlertsScreen
 import com.iti.fineweather.features.bookmarks.views.BookmarksScreen
 import com.iti.fineweather.features.common.views.LockScreenOrientation
@@ -30,17 +31,19 @@ class MainActivity : ComponentActivity() {
         setContent {
             LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
             FineWeatherTheme {
-                AppNavigation(
-                    routes = listOf(
-                        SplashScreen.routeInfo,
-                        HomeScreen.routeInfo,
-                        SettingsScreen.routeInfo,
-                        BookmarksScreen.routeInfo,
-                        AlertsScreen.routeInfo,
-                        WeatherScreen.routeInfo,
-                        MapScreen.routeInfo,
+                AppLayoutDirection {
+                    AppNavigation(
+                        routes = listOf(
+                            SplashScreen.routeInfo,
+                            HomeScreen.routeInfo,
+                            SettingsScreen.routeInfo,
+                            BookmarksScreen.routeInfo,
+                            AlertsScreen.routeInfo,
+                            WeatherScreen.routeInfo,
+                            MapScreen.routeInfo,
+                        )
                     )
-                )
+                }
             }
         }
     }

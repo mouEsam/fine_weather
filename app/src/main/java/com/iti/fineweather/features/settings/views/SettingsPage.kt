@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,8 +26,11 @@ import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.theme.LocalTheme
+import com.iti.fineweather.core.utils.LocalLocaleController
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.core.utils.updateLocale
+import com.iti.fineweather.features.common.utils.horizontalGradientDirectional
 import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.views.MapScreen
@@ -127,7 +131,9 @@ fun SettingsList(
         val lifecycleOwner = LocalLifecycleOwner.current
         val currentStackEntry = LocalNavigation.backStackEntry
         val navController = LocalNavigation.navController
-        val configs = LocalConfiguration.current
+        val context = LocalContext.current
+        val configuration = LocalConfiguration.current
+        val localeController = LocalLocaleController.current
 
         Configuration(
             label = stringResource(R.string.settings_language),
@@ -136,7 +142,7 @@ fun SettingsList(
                 ConfigurationValue(label = it.toLocalizedName())
             },
             onOptionSelected = {
-                configs.setLocale(it.toLocale())
+                configuration.updateLocale(context, localeController, it.toLocale())
                 settingsViewModel.updateLanguage(it)
             },
             selectedOption = settings?.language
@@ -215,7 +221,7 @@ fun <T> Configuration(
             .clip(
                 shape = LocalTheme.shapes.largeRoundedCornerShape,
             ).background(
-                brush = Brush.horizontalGradient(
+                brush = Brush.horizontalGradientDirectional(
                     listOf(
                         Color.Unspecified,
                         LocalTheme.colors.mainContent,

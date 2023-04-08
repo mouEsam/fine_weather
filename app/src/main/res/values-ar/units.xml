@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="temperature_kelvin">K</string>
+    <string name="temperature_celsius">°C</string>
+    <string name="temperature_fahrenheit">°F</string>
+
+    <string name="wind_speed_ms">م\\ث</string>
+    <string name="wind_speed_miles_hr">ميل\\س</string>
+    <string name="pressure_hpa">هكتوباسكال</string>
+</resources>
