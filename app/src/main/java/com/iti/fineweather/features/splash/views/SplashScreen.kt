@@ -26,6 +26,7 @@ import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.common.views.AppRadioButton
+import com.iti.fineweather.features.common.views.Background
 import com.iti.fineweather.features.common.views.ClearStatusBar
 import com.iti.fineweather.features.home.views.HomeScreen
 import com.iti.fineweather.features.map.models.MapPlaceResult
@@ -34,6 +35,7 @@ import com.iti.fineweather.features.settings.models.UserPreferences.Language
 import com.iti.fineweather.features.settings.utils.toLocale
 import com.iti.fineweather.features.settings.utils.toLocalizedName
 import com.iti.fineweather.features.settings.viewmodels.SettingsViewModel
+import com.iti.fineweather.features.weather.helpers.Constants
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -90,14 +92,16 @@ fun SplashScreen(
         }
     }
 
-    ClearStatusBar {
-        CompositionScaffoldProvider {
-            Scaffold(
-                snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
-                containerColor = LocalTheme.colors.main,
-                contentColor = LocalTheme.colors.mainContent,
-            ) { innerPadding ->
-                Column(modifier = Modifier.padding(innerPadding)) { }
+    Background {
+        ClearStatusBar {
+            CompositionScaffoldProvider {
+                Scaffold(
+                    snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
+                    containerColor = LocalTheme.colors.main.copy(alpha = Constants.BACKGROUND_COLOR_ALPHA),
+                    contentColor = LocalTheme.colors.mainContent,
+                ) { innerPadding ->
+                    Column(modifier = Modifier.padding(innerPadding)) { }
+                }
             }
         }
     }

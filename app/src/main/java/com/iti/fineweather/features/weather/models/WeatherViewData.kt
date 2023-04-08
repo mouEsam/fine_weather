@@ -1,10 +1,10 @@
 package com.iti.fineweather.features.weather.models
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.RawRes
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZonedDateTime
 import java.util.*
@@ -68,10 +68,16 @@ data class WeatherState(
 
     @RawRes val dayIcon: Int,
     @RawRes val nightIcon: Int,
+    @DrawableRes val dayBG: Int,
+    @DrawableRes val nightBG: Int,
 ) {
     @get:RawRes
     val icon: Int
         get() = if (isDay) dayIcon else nightIcon
+
+    @get:DrawableRes
+    val bg: Int
+        get() = if (isDay) dayBG else nightBG
 
     val color: Color
         get() = weatherType.color(isDay)
