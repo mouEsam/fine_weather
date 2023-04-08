@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.LocationOn
@@ -25,7 +26,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
 import androidx.palette.graphics.Palette
 import androidx.palette.graphics.Palette.Swatch
 import coil.compose.AsyncImage
@@ -59,13 +58,8 @@ import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.settings.views.SettingsScreen
 import com.iti.fineweather.features.weather.models.*
 import com.iti.fineweather.features.weather.viewmodels.WeatherViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZonedDateTime
+import kotlinx.coroutines.*
+import java.time.*
 import java.util.*
 import androidx.palette.graphics.Target as ColorTarget
 
@@ -104,14 +98,16 @@ fun WeatherContent(
     val navController = LocalNavigation.navController
     val weatherViewData = weatherViewDataState.data
     val color = weatherViewData?.now?.weatherState?.color
-        ?: (weatherViewDataState.error?.let { MaterialTheme.colorScheme.error }) ?: LocalTheme.colors.main
+        ?: (weatherViewDataState.error?.let { MaterialTheme.colorScheme.error })
+        ?: LocalTheme.colors.main
     val colorSwatch = getColorPalette(
         color = color,
         preferLight = weatherViewData?.now?.weatherState?.isDay != false,
     )
     val backgroundColor = colorSwatch?.rgb?.let { Color(it).copy(alpha = 1.0f) } ?: color
     val foregroundColor =
-        colorSwatch?.bodyTextColor?.let { Color(it).copy(alpha = 1.0f) } ?: LocalTheme.colors.mainContent
+        colorSwatch?.bodyTextColor?.let { Color(it).copy(alpha = 1.0f) }
+            ?: LocalTheme.colors.mainContent
     Box {
         Background(
             painter = weatherViewData?.now?.weatherState?.bg?.let { painterResource(it) },
@@ -157,7 +153,8 @@ fun WeatherContent(
                                 BackButton()
                             }
                             Row(
-                                modifier = Modifier.weight(1.0f).padding(top = LocalTheme.spaces.medium),
+                                modifier = Modifier.weight(1.0f)
+                                    .padding(top = LocalTheme.spaces.medium),
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.LocationOn,
@@ -273,7 +270,10 @@ fun WeatherContent(
                 ) {
                     var selectedTab by rememberSaveable { mutableStateOf(0) }
                     val items = listOf(
-                        stringResource(R.string.home_tab_today, dateFormatter.format(LocalDate.now())),
+                        stringResource(
+                            R.string.home_tab_today,
+                            dateFormatter.format(LocalDate.now())
+                        ),
                         stringResource(R.string.home_tab_this_week),
                         stringResource(R.string.home_tab_alerts)
                     )
@@ -317,8 +317,9 @@ fun WeatherContent(
                         when (currentSelected) {
                             0 -> HourlyWeather(
                                 contentColor = foregroundColor,
+                                timeZone = weatherViewData?.timezone,
                                 weatherUnitData = weatherViewData?.units,
-                                weatherData = weatherViewData?.hourly,
+                                weatherHourlyData = weatherViewData?.hourly,
                             )
 
                             1 -> DailyWeather(
@@ -430,7 +431,8 @@ fun WeatherDescription(
                 ),
         ) {
             Text(
-                text = weatherData?.let { dayFormatter.format(now) } ?: stringResource(R.string.placeholder_day),
+                text = weatherData?.let { dayFormatter.format(now) }
+                    ?: stringResource(R.string.placeholder_day),
                 style = LocalTheme.typography.bodyBold,
             )
             Text(
@@ -447,7 +449,8 @@ fun WeatherDescription(
                 units = weatherData?.units,
             )
             Text(
-                text = weatherData?.now?.weatherState?.description ?: stringResource(R.string.placeholder_description),
+                text = weatherData?.now?.weatherState?.description
+                    ?: stringResource(R.string.placeholder_description),
                 style = LocalTheme.typography.actionBold,
                 textAlign = TextAlign.Center,
             )
@@ -458,37 +461,77 @@ fun WeatherDescription(
 @Composable
 fun getCurrentDate(timeZone: TimeZone): String {
     val dateFormatter = rememberLocalizedDateTimeFormatter("yyyy-MM-dd, EEEE")
-    val now by rememberUpdatedState(LocalDate.now(timeZone.toZoneId()))
-    val formatted by remember { derivedStateOf { dateFormatter.format(now) } }
+    val timezoneState by rememberUpdatedState(timeZone)
+    val dateFlow: LocalDate by produceState(
+        key1 = timezoneState,
+        initialValue = LocalDate.now(timezoneState.toZoneId())
+    ) {
+        while (isActive) {
+            val today = LocalDateTime.now(timeZone.toZoneId())
+            val tommorrow = today.toLocalDate().atStartOfDay()
+            withContext(Dispatchers.Default) {
+                delay(Duration.between(today, tommorrow).toMillis())
+            }
+            value = LocalDate.now(timeZone.toZoneId())
+        }
+    }
+    val formatted by remember { derivedStateOf { dateFormatter.format(dateFlow) } }
     return formatted
 }
 
 @Composable
 fun getCurrentTimeText(timeZone: TimeZone): String {
     val timeFormatter = rememberLocalizedDateTimeFormatter("hh:mm:ss a")
-    val lifecycleOwner = LocalLifecycleOwner.current
-    var now by remember { mutableStateOf(ZonedDateTime.now(timeZone.toZoneId())) }
-    LaunchedEffect(key1 = timeZone) {
-        lifecycleOwner.lifecycleScope.launch {
-            while (isActive) {
-                delay(1000)
-                now = ZonedDateTime.now(timeZone.toZoneId())
-            }
+    val timezoneState by rememberUpdatedState(timeZone)
+    val timeFlow: LocalTime by produceState(
+        key1 = timezoneState,
+        initialValue = LocalTime.now(timezoneState.toZoneId())
+    ) {
+        while (isActive) {
+            withContext(Dispatchers.Default) { delay(1000) }
+            value = LocalTime.now(timeZone.toZoneId())
         }
     }
-    val formatted by remember { derivedStateOf { timeFormatter.format(now) } }
+    val formatted by remember { derivedStateOf { timeFormatter.format(timeFlow) } }
     return formatted
 }
 
 @Composable
 fun HourlyWeather(
     contentColor: Color,
-    weatherData: SortedMap<LocalTime, WeatherData>?,
+    timeZone: TimeZone?,
+    weatherHourlyData: SortedMap<LocalTime, WeatherData>?,
     weatherUnitData: WeatherUnitData?,
 ) {
+    val scrollState = rememberLazyListState()
+    val weatherHourlyDataState by rememberUpdatedState(weatherHourlyData)
+    val timeZoneState by rememberUpdatedState(timeZone?.toZoneId() ?: ZoneId.systemDefault())
+    val hourFlow: LocalTime by produceState(
+        key1 = timeZoneState,
+        initialValue = LocalTime.now(timeZoneState)
+    ) {
+        value = LocalTime.now(timeZoneState)
+        while (isActive) {
+            val nextHour = value.withMinute(0).withHour(value.hour + 1)
+            withContext(Dispatchers.Default) { delay(Duration.between(value, nextHour).toMillis()) }
+            value = nextHour
+        }
+    }
+    val initialIndex by remember {
+        derivedStateOf {
+            weatherHourlyDataState?.keys?.indexOfLast { time ->
+                time.isBefore(hourFlow)
+            }?.coerceAtLeast(1) ?: 1
+        }
+    }
+    LaunchedEffect(initialIndex) {
+        scrollState.animateScrollToItem(initialIndex)
+    }
     val timeFormatter = rememberLocalizedDateTimeFormatter("hh:mm a")
-    val items = remember(key1 = weatherData) { weatherData?.entries?.toList() }
+    val items =
+        remember(key1 = weatherHourlyDataState) { weatherHourlyDataState?.entries?.toList() }
     LazyRow(
+        state = scrollState,
         contentPadding = PaddingValues(horizontal = LocalTheme.spaces.large),
         horizontalArrangement = Arrangement.spacedBy(
             space = LocalTheme.spaces.large,
@@ -500,9 +543,11 @@ fun HourlyWeather(
         items(count = items?.size ?: 7) { index ->
             val entry = items?.getOrNull(index)
             WeatherSummery(
-                contentColor = contentColor,
+                color = if (index == initialIndex) LocalTheme.colors.main else null,
+                contentColor = if (index == initialIndex) LocalTheme.colors.mainContent else contentColor,
                 showParams = true,
-                label = entry?.key?.let(timeFormatter::format) ?: stringResource(R.string.placeholder_day),
+                label = entry?.key?.let(timeFormatter::format)
+                    ?: stringResource(R.string.placeholder_day),
                 weatherData = entry?.value,
                 weatherUnitData = weatherUnitData,
             )
@@ -531,7 +576,8 @@ fun DailyWeather(
             WeatherSummery(
                 contentColor = contentColor,
                 showParams = true,
-                label = entry?.key?.let(dayFormatter::format) ?: stringResource(R.string.placeholder_day),
+                label = entry?.key?.let(dayFormatter::format)
+                    ?: stringResource(R.string.placeholder_day),
                 weatherData = entry?.value,
                 weatherUnitData = weatherUnitData,
             )
@@ -581,19 +627,22 @@ fun Alerts(
                             style = LocalTheme.typography.action,
                         )
                         val startsAt =
-                            alert?.start?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
+                            alert?.start?.let(dateTimeFormatter::format)
+                                ?: stringResource(R.string.placeholder_event)
                         Text(
                             text = stringResource(R.string.home_tab_alert_start_at, startsAt),
                             style = LocalTheme.typography.body,
                         )
                         val endsAt =
-                            alert?.end?.let(dateTimeFormatter::format) ?: stringResource(R.string.placeholder_event)
+                            alert?.end?.let(dateTimeFormatter::format)
+                                ?: stringResource(R.string.placeholder_event)
                         Text(
                             text = stringResource(R.string.home_tab_alert_until, endsAt),
                             style = LocalTheme.typography.body,
                         )
                         Text(
-                            text = alert?.description ?: stringResource(R.string.placeholder_event_description),
+                            text = alert?.description
+                                ?: stringResource(R.string.placeholder_event_description),
                             style = LocalTheme.typography.label,
                             maxLines = 4,
                             overflow = TextOverflow.Ellipsis,
@@ -634,13 +683,14 @@ fun Alerts(
 
 @Composable
 fun WeatherSummery(
+    color: Color? = null,
     contentColor: Color,
     showParams: Boolean,
     label: String,
     weatherData: WeatherData?,
     weatherUnitData: WeatherUnitData?,
 ) {
-    val color = LocalContentColor.current
+    val color = color ?: LocalContentColor.current
     Surface(
         color = Color.Unspecified,
         contentColor = contentColor
@@ -737,7 +787,8 @@ fun WeatherParam(
     style: TextStyle,
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(
             space = LocalTheme.spaces.small,
             alignment = Alignment.CenterHorizontally,
         )
@@ -776,7 +827,11 @@ fun TemperatureView(
                 TemperatureItem(
                     temp = temp.day,
                     units = units,
-                    style = LocalTheme.typography.title.copy(color = Color.Yellow.compositeOver(Color.Red)),
+                    style = LocalTheme.typography.title.copy(
+                        color = Color.Yellow.compositeOver(
+                            Color.Red
+                        )
+                    ),
                 )
                 TemperatureItem(
                     temp = temp.night,

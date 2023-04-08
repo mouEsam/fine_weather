@@ -133,7 +133,7 @@ fun BookmarksList(
             val timeFlow = remember {
                 flow {
                     while (currentCoroutineContext().isActive) {
-                        delay(1000)
+                        withContext(Dispatchers.Default) { delay(1000) }
                         emit(getCurrentDateTime())
                     }
                 }.stateIn(coroutineScope, started = SharingStarted.Lazily, initialValue = getCurrentDateTime())
