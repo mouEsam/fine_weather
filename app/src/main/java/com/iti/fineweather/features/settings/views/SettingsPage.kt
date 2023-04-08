@@ -29,7 +29,6 @@ import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.LocalLocaleController
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
-import com.iti.fineweather.core.utils.updateLocale
 import com.iti.fineweather.features.common.utils.horizontalGradientDirectional
 import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.map.models.MapPlaceResult
@@ -142,7 +141,7 @@ fun SettingsList(
                 ConfigurationValue(label = it.toLocalizedName())
             },
             onOptionSelected = {
-                configuration.updateLocale(context, localeController, it.toLocale())
+                localeController.changeLocale(it.toLocale())
                 settingsViewModel.updateLanguage(it)
             },
             selectedOption = settings?.language

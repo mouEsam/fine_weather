@@ -32,7 +32,6 @@ import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.LocalLocaleController
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
-import com.iti.fineweather.core.utils.updateLocale
 import com.iti.fineweather.features.common.views.AppRadioButton
 import com.iti.fineweather.features.common.views.Background
 import com.iti.fineweather.features.common.views.ClearStatusBar
@@ -80,7 +79,7 @@ fun SplashScreen(
                     contentColor = LocalTheme.colors.mainContent,
                 ) { innerPadding ->
 
-                    val snackbarState = LocalScaffold.snackbarHost
+                    val snackBarState = LocalScaffold.snackbarHost
                     val noGpsError = stringResource(R.string.error_location_permission)
                     val permissions = rememberMultiplePermissionsState(
                         permissions = listOf(
@@ -93,7 +92,7 @@ fun SplashScreen(
                             settingsViewModel.updateGpsLocation()
                         } else {
                             coroutineScope.launch {
-                                snackbarState.showSnackbar(noGpsError)
+                                snackBarState.showSnackbar(noGpsError)
                             }
                         }
                     }
@@ -112,7 +111,7 @@ fun SplashScreen(
 
                             else -> {
                                 LaunchedEffect(key1 = true) {
-                                    configurations.updateLocale(context, localeController, userPreferences.language.toLocale())
+                                    localeController.changeLocale(userPreferences.language.toLocale())
                                     if (settingsViewModel.isLocationUpdateNeeded) {
                                         permissions.launchMultiplePermissionRequest()
                                     }
@@ -162,7 +161,8 @@ fun MissingLanguageDialog(
                         selected = language == item,
                         onSelected = {
                             language = item
-                            configuration.updateLocale(context, localeController, item.toLocale())
+                            localeController.changeLocale(item.toLocale())
+
                         }
                     )
                 }
