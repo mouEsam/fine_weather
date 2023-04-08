@@ -35,6 +35,7 @@ import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import com.iti.fineweather.features.alerts.models.WeatherAlertTemplate
 import com.iti.fineweather.features.alerts.viewmodels.NewWeatherAlertViewModel
 import com.iti.fineweather.features.alerts.viewmodels.WeatherAlertsViewModel
+import com.iti.fineweather.features.common.utils.horizontalGradientDirectional
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.common.views.AppRadioButton
 import com.iti.fineweather.features.common.views.ManualActionLock
@@ -239,7 +240,7 @@ fun AlertsList(
                                     alignment = Alignment.Top,
                                 ),
                                 modifier = Modifier.fillMaxWidth().background(
-                                    brush = Brush.horizontalGradient(
+                                    brush = Brush.horizontalGradientDirectional(
                                         listOf(
                                             Color.Unspecified,
                                             LocalTheme.colors.mainContent,
@@ -438,7 +439,7 @@ fun NewAlertForm(
                     space = LocalTheme.spaces.medium,
                     alignment = Alignment.CenterHorizontally,
                 ),
-                verticalAlignment = Alignment.CenterVertically,
+                verticalArrangement = Arrangement.Center,
             ) {
                 Box {
                     var showDatePicker by rememberSaveable { mutableStateOf(false) }

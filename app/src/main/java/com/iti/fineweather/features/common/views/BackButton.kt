@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.iti.fineweather.core.navigation.LocalNavigation
+import com.iti.fineweather.features.common.utils.autoMirrored
 
 @Composable
 fun BackButton() {
@@ -23,6 +24,7 @@ fun BackButton() {
                   imageVector = Icons.Rounded.ArrowBack,
                   contentDescription = null,
                   tint = LocalContentColor.current,
+                  modifier = Modifier.autoMirrored(),
               )
         },
     )

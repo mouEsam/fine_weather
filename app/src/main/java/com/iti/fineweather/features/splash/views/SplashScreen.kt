@@ -9,8 +9,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -27,8 +29,10 @@ import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
 import com.iti.fineweather.core.theme.LocalTheme
+import com.iti.fineweather.core.utils.LocalLocaleController
 import com.iti.fineweather.core.utils.getResult
 import com.iti.fineweather.core.utils.navigate
+import com.iti.fineweather.core.utils.updateLocale
 import com.iti.fineweather.features.common.views.AppRadioButton
 import com.iti.fineweather.features.common.views.Background
 import com.iti.fineweather.features.common.views.ClearStatusBar
@@ -61,48 +65,11 @@ object SplashScreen : Screen<SplashScreen.SplashRoute> {
 fun SplashScreen(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
+    val localeController = LocalLocaleController.current
     val configurations = LocalConfiguration.current
     val navController = LocalNavigation.navController
     val coroutineScope = rememberCoroutineScope()
-    val snackbarState = LocalScaffold.snackbarHost
-    val noGpsError = stringResource(R.string.error_location_permission)
-    val permissions = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        )
-    ) { permissions ->
-        @SuppressLint("MissingPermission")
-        if (permissions.any { p -> p.value }) {
-            settingsViewModel.updateGpsLocation()
-        } else {
-            coroutineScope.launch {
-                snackbarState.showSnackbar(noGpsError)
-            }
-        }
-    }
-
-    val userPreferencesState by settingsViewModel.uiState.collectAsState()
-    if (userPreferencesState is UiState.Loaded) {
-        val userPreferences = userPreferencesState.data!!
-        when {
-            !userPreferences.hasLanguage() -> {
-                MissingLanguageDialog(settingsViewModel = settingsViewModel)
-            }
-            !userPreferences.hasLocation() -> {
-                MissingLocation(settingsViewModel = settingsViewModel, permissions = permissions)
-            }
-            else -> {
-                LaunchedEffect(key1 = true) {
-                    configurations.setLocale(userPreferences.language.toLocale())
-                    if (settingsViewModel.isLocationUpdateNeeded) {
-                        permissions.launchMultiplePermissionRequest()
-                    }
-                    navController.navigate(HomeScreen.routeInfo.toNavRequest())
-                }
-            }
-        }
-    }
 
     Background {
         ClearStatusBar {
@@ -112,7 +79,50 @@ fun SplashScreen(
                     containerColor = LocalTheme.colors.main.copy(alpha = Constants.BACKGROUND_COLOR_ALPHA),
                     contentColor = LocalTheme.colors.mainContent,
                 ) { innerPadding ->
-                    Box (
+
+                    val snackbarState = LocalScaffold.snackbarHost
+                    val noGpsError = stringResource(R.string.error_location_permission)
+                    val permissions = rememberMultiplePermissionsState(
+                        permissions = listOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                        )
+                    ) { permissions ->
+                        @SuppressLint("MissingPermission")
+                        if (permissions.any { p -> p.value }) {
+                            settingsViewModel.updateGpsLocation()
+                        } else {
+                            coroutineScope.launch {
+                                snackbarState.showSnackbar(noGpsError)
+                            }
+                        }
+                    }
+
+                    val userPreferencesState by settingsViewModel.uiState.collectAsState()
+                    if (userPreferencesState is UiState.Loaded) {
+                        val userPreferences = userPreferencesState.data!!
+                        when {
+                            !userPreferences.hasLanguage() -> {
+                                MissingLanguageDialog(settingsViewModel = settingsViewModel)
+                            }
+
+                            !userPreferences.hasLocation() -> {
+                                MissingLocation(settingsViewModel = settingsViewModel, permissions = permissions)
+                            }
+
+                            else -> {
+                                LaunchedEffect(key1 = true) {
+                                    configurations.updateLocale(context, localeController, userPreferences.language.toLocale())
+                                    if (settingsViewModel.isLocationUpdateNeeded) {
+                                        permissions.launchMultiplePermissionRequest()
+                                    }
+                                    navController.navigate(HomeScreen.routeInfo.toNavRequest())
+                                }
+                            }
+                        }
+                    }
+
+                    Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -120,7 +130,7 @@ fun SplashScreen(
                             imageVector = ImageVector.vectorResource(R.drawable.ic_launcher_foreground),
                             contentDescription = null,
 //                            alignment = Alignment.Center,
-                            modifier = Modifier.padding(innerPadding)
+                            modifier = Modifier.padding(innerPadding).scale(2.0f)
                         )
                     }
                 }
@@ -134,7 +144,9 @@ fun SplashScreen(
 fun MissingLanguageDialog(
     settingsViewModel: SettingsViewModel
 ) {
-    val configs = LocalConfiguration.current
+    val context = LocalContext.current
+    val localeController = LocalLocaleController.current
+    val configuration = LocalConfiguration.current
     var language by remember { mutableStateOf<Language?>(null) }
 
     AlertDialog(
@@ -150,7 +162,7 @@ fun MissingLanguageDialog(
                         selected = language == item,
                         onSelected = {
                             language = item
-                            configs.setLocale(item.toLocale())
+                            configuration.updateLocale(context, localeController, item.toLocale())
                         }
                     )
                 }

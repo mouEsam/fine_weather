@@ -33,6 +33,7 @@ import com.iti.fineweather.core.utils.navigate
 import com.iti.fineweather.features.bookmarks.entities.PlaceBookmark
 import com.iti.fineweather.features.bookmarks.viewmodels.PlaceBookmarksViewModel
 import com.iti.fineweather.features.bookmarks.viewmodels.PlaceTimezoneViewModel
+import com.iti.fineweather.features.common.utils.horizontalGradientDirectional
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.map.models.MapPlaceResult
@@ -243,7 +244,7 @@ fun BookmarksList(
                                     .clip(
                                         shape = LocalTheme.shapes.largeRoundedCornerShape,
                                     ).background(
-                                        brush = Brush.horizontalGradient(
+                                        brush = Brush.horizontalGradientDirectional(
                                             listOf(
                                                 Color.Unspecified,
                                                 LocalTheme.colors.mainContent,

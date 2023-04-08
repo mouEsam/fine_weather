@@ -69,10 +69,10 @@ configurations {
 
 dependencies {
 
-    implementation 'com.google.android.material:material:1.4.+'
     coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:$jdk_desuger_version"
 
     implementation "androidx.core:core-ktx:$core_version"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version"
     implementation "androidx.palette:palette:$palette_version"
 
@@ -87,7 +87,7 @@ dependencies {
     // Compose
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
-    implementation "androidx.compose.ui:ui-text-google-fonts:$google_fonts_version"
+    implementation "androidx.compose.ui:ui-text-google-fonts:$compose_version"
 //    implementation "androidx.compose.material:material:$compose_ui_version"
     implementation "androidx.compose.material:material-icons-core:$compose_ui_version"
     implementation "androidx.compose.material:material-icons-extended:$compose_ui_version"
@@ -129,7 +129,7 @@ dependencies {
     implementation "com.google.maps.android:maps-compose:$google_maps_version"
     implementation "com.google.android.gms:play-services-maps:$playservices_maps_version"
     implementation "com.google.android.libraries.places:places:$google_places_version"
-    implementation 'androidx.appcompat:appcompat:1.6.1' // Needed for google places plugin
+
 
     // Datastore
     implementation "androidx.datastore:datastore:$proto_datastore_version"

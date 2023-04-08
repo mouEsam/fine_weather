@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_unknown">حدث خطأ غير متوقع</string>
+    <string name="error_date_end_before_start">تاريخ الانتهاء لابد ان يكون قبل تاريخ البدأ</string>
+    <string name="error_submit_before_add">يجب اضافة تنبيه قبل حفظه</string>
+    <string name="error_submit_before_modify">يجب اضافة تنبيه قبل تعديله</string>
+    <string name="error_missing_value">%s مطلوبة</string>
+    <string name="error_internet_fetch">واجهتنا مشكلة في طلب %s</string>
+    <string name="error_delete_deleted_alarm">التنبيه محذوف بالفعل</string>
+    <string name="error_exhaust_exhausted_alarm">التنبيه منتهي بالفعل</string>
+    <string name="error_delete_deleted_place">المكان محذوف بالفعل</string>
+    <string name="error_place_not_found">لم نستطع العثور على المكان</string>
+    <string name="error_location_permission">يجب السماح بصلاحية الوصول الى مكانك لتحديث البيانات</string>
+    <string name="error_notifications_permission">صلاحية الاشعارات مطلوبة لاضافة تنبيه من هذا النوع</string>
+    <string name="error_overlay_permission">صلاحية الرسم فوق التطبيقات مطلوبة لاضافة تنبيه من هذا النوع</string>
+</resources>

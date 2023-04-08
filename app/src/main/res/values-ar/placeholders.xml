@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="placeholder_location">Your city</string>
+    <string name="placeholder_weather">N/A</string>
+    <string name="placeholder_temperature">N/A</string>
+    <string name="placeholder_wind">N/A</string>
+    <string name="placeholder_cloud">N/A</string>
+    <string name="placeholder_humidity">N/A</string>
+    <string name="placeholder_pressure">N/A</string>
+    <string name="placeholder_day">N/A</string>
+    <string name="placeholder_time">N/A</string>
+    <string name="placeholder_description">N/A</string>
+    <string name="placeholder_event">N/A</string>
+    <string name="placeholder_event_description">N/A</string>
+</resources>
