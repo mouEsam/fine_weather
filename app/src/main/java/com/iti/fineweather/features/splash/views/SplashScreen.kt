@@ -63,6 +63,9 @@ fun SplashScreen(
 ) {
     val configurations = LocalConfiguration.current
     val navController = LocalNavigation.navController
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarState = LocalScaffold.snackbarHost
+    val noGpsError = stringResource(R.string.error_location_permission)
     val permissions = rememberMultiplePermissionsState(
         permissions = listOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -72,8 +75,13 @@ fun SplashScreen(
         @SuppressLint("MissingPermission")
         if (permissions.any { p -> p.value }) {
             settingsViewModel.updateGpsLocation()
+        } else {
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noGpsError)
+            }
         }
     }
+
     val userPreferencesState by settingsViewModel.uiState.collectAsState()
     if (userPreferencesState is UiState.Loaded) {
         val userPreferences = userPreferencesState.data!!
