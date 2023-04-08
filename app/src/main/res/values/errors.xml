@@ -4,10 +4,14 @@
     <string name="error_submit_before_add">You must add an alert first before saving it.</string>
     <string name="error_submit_before_modify">You must add an alert first before modifying it.</string>
     <string name="error_missing_value">%s is required.</string>
+    <string name="error_internet_fetch">Encountered an error trying to fetch %s</string>
     <string name="error_delete_deleted_alarm">Can\'t delete an already deleted alarm</string>
     <string name="error_exhaust_exhausted_alarm">Can\'t exhaust an already exhausted alarm</string>
     <string name="error_delete_deleted_place">Can\'t delete an already deleted bookmark</string>
     <string name="error_place_not_found">Could\'t find this place</string>
+    <string name="error_location_permission">Location permission is required to access your location</string>
+    <string name="error_notifications_permission">Notification post permission is required to show notifications</string>
+    <string name="error_overlay_permission">Overlay draw permission is required to show alarms</string>
 
 
 </resources>

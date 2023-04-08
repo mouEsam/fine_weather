@@ -25,7 +25,7 @@ class WeatherAlertsViewModel @Inject constructor(private val alertsRepository: W
     }
 
     private val _operationState = MutableSharedFlow<UiState<Unit>>()
-    val operationState = _operationState.stateIn(viewModelScope, SharingStarted.Lazily, UiState.Initial())
+    val operationState = _operationState.asSharedFlow()
 
     fun addAlert(alert: UserWeatherAlert) {
         viewModelScope.launch {

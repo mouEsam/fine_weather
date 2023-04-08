@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
 import com.iti.fineweather.R
+import com.iti.fineweather.core.helpers.LocalScaffold
 import com.iti.fineweather.core.helpers.UiState
 import com.iti.fineweather.core.theme.LocalTheme
 import com.iti.fineweather.core.utils.error
@@ -37,6 +38,7 @@ import com.iti.fineweather.features.alerts.viewmodels.WeatherAlertsViewModel
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.common.views.AppRadioButton
 import com.iti.fineweather.features.common.views.ManualActionLock
+import com.iti.fineweather.features.common.views.showErrorSnackbar
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.*
@@ -48,14 +50,24 @@ fun AlertsPage(
     alertsViewModel: WeatherAlertsViewModel = hiltViewModel(),
     newWeatherAlertViewModel: NewWeatherAlertViewModel = hiltViewModel(),
 ) {
-    val state: UiState<List<UserWeatherAlert>> by alertsViewModel.uiState.collectAsState()
+    val uiState by alertsViewModel.uiState.collectAsState()
+    showErrorSnackbar(uiState)
+    newAlertContent(alertsViewModel)
 
     AlertsContent(
         modifier = modifier,
         alertsViewModel = alertsViewModel,
         newWeatherAlertViewModel = newWeatherAlertViewModel,
-        alertsState = state,
+        alertsState = uiState,
     )
+}
+
+@Composable
+fun newAlertContent(
+    alertsViewModel: WeatherAlertsViewModel,
+) {
+    val uiState by alertsViewModel.operationState.collectAsState(UiState.Initial())
+    showErrorSnackbar(uiState)
 }
 
 @Composable
@@ -304,6 +316,10 @@ fun NewAlertForm(
     newAlertTemplate: WeatherAlertTemplate
 ) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarState = LocalScaffold.snackbarHost
+    val noNotificationsError = stringResource(R.string.error_notifications_permission)
+    val noOverlayError = stringResource(R.string.error_overlay_permission)
 
     fun onAlarmGranted() {
         newWeatherAlertViewModel.submit()
@@ -317,7 +333,9 @@ fun NewAlertForm(
         if (Settings.canDrawOverlays(context)) {
             onAlarmGranted()
         } else {
-            // TODO: show error
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noOverlayError)
+            }
         }
     }
 
@@ -337,7 +355,9 @@ fun NewAlertForm(
         if (granted) {
             onNotificationGranted()
         } else {
-            // TODO: show error
+            coroutineScope.launch {
+                snackbarState.showSnackbar(noNotificationsError)
+            }
         }
     }
 

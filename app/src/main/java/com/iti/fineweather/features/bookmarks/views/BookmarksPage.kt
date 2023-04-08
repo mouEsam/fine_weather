@@ -34,6 +34,7 @@ import com.iti.fineweather.features.bookmarks.entities.PlaceBookmark
 import com.iti.fineweather.features.bookmarks.viewmodels.PlaceBookmarksViewModel
 import com.iti.fineweather.features.bookmarks.viewmodels.PlaceTimezoneViewModel
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
+import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.views.MapScreen
 import com.iti.fineweather.features.weather.views.WeatherScreen
@@ -55,13 +56,23 @@ fun BookmarksPage(
     modifier: Modifier = Modifier,
     bookmarksViewModel: PlaceBookmarksViewModel = hiltViewModel()
 ) {
-    val state: UiState<List<PlaceBookmark>> by bookmarksViewModel.uiState.collectAsState()
+    val uiState by bookmarksViewModel.uiState.collectAsState()
+    showErrorSnackbar(uiState)
+    newBookmarkContent(bookmarksViewModel)
 
     BookmarksContent(
         modifier = modifier,
         bookmarksViewModel = bookmarksViewModel,
-        bookmarksState = state,
+        bookmarksState = uiState,
     )
+}
+
+@Composable
+fun newBookmarkContent(
+    bookmarksViewModel: PlaceBookmarksViewModel,
+) {
+    val uiState by bookmarksViewModel.operationState.collectAsState(UiState.Initial())
+    showErrorSnackbar(uiState)
 }
 
 @Composable

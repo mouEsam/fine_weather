@@ -1,13 +1,16 @@
 package com.iti.fineweather.features.weather.repositories
 
+import com.iti.fineweather.R
+import com.iti.fineweather.core.helpers.InternetFetchException
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.features.weather.models.RemoteWeatherResponse
 import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
-import dagger.hilt.android.scopes.ActivityRetainedScoped
+import java.io.IOException
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Singleton
 
-@ActivityRetainedScoped
+@Singleton
 class WeatherRepository @Inject constructor(private val weatherRemoteService: WeatherRemoteService) {
     suspend fun getWeatherData(
         latitude: Double,
@@ -21,6 +24,8 @@ class WeatherRepository @Inject constructor(private val weatherRemoteService: We
                 language = locale.language,
             )
             Resource.Success.Remote(response)
+        } catch (e: IOException) {
+            Resource.Error(InternetFetchException(R.string.weather_data))
         } catch (e: Exception) {
             Resource.Error(e)
         }

@@ -55,6 +55,7 @@ import com.iti.fineweather.features.bookmarks.views.BookmarksScreen
 import com.iti.fineweather.features.common.utils.rememberLocalizedDateTimeFormatter
 import com.iti.fineweather.features.common.views.BackButton
 import com.iti.fineweather.features.common.views.Background
+import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.settings.views.SettingsScreen
 import com.iti.fineweather.features.weather.models.*
 import com.iti.fineweather.features.weather.viewmodels.WeatherViewModel
@@ -84,9 +85,7 @@ fun WeatherPage(
     }
 
     val uiState by weatherViewModel.uiState.collectAsState()
-    LaunchedEffect(key1 = uiState) {
-        Timber.d(uiState.toString())
-    }
+    showErrorSnackbar(uiState)
 
     WeatherContent(
         modifier = modifier,
@@ -105,7 +104,8 @@ fun WeatherContent(
 ) {
     val navController = LocalNavigation.navController
     val weatherViewData = weatherViewDataState.data
-    val color = weatherViewData?.now?.weatherState?.color ?: LocalTheme.colors.main
+    val color = weatherViewData?.now?.weatherState?.color
+        ?: (weatherViewDataState.error?.let { MaterialTheme.colorScheme.error }) ?: LocalTheme.colors.main
     val colorSwatch = getColorPalette(
         color = color,
         preferLight = weatherViewData?.now?.weatherState?.isDay != false,

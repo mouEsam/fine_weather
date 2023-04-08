@@ -2,6 +2,8 @@
     <string name="app_name">Fine Weather</string>
     <string name="placeholder">Placeholder</string>
     <string name="select">Select</string>
+    <!--  Weather  -->
+    <string name="weather_data">weather data</string>
     <!--  Splash  -->
     <string name="splash_select_language">Select your language</string>
     <string name="splash_location_title">Location</string>

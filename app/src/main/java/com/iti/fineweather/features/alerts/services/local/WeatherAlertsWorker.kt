@@ -6,9 +6,9 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.iti.fineweather.features.alerts.entities.RepetitionType
 import com.iti.fineweather.features.alerts.repositories.WeatherAlertsRepository
-import com.iti.fineweather.features.common.helpers.languageCode
 import com.iti.fineweather.features.common.repositories.UserPreferencesRepository
-import com.iti.fineweather.features.weather.services.remote.WeatherRemoteService
+import com.iti.fineweather.features.settings.utils.toLocale
+import com.iti.fineweather.features.weather.repositories.WeatherRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.firstOrNull
@@ -21,7 +21,7 @@ class WeatherAlertsWorker @AssistedInject constructor(
     private val weatherAlertsNotifier: WeatherAlertsNotifier,
     private val weatherAlertsRepository: WeatherAlertsRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
-    private val weatherRemoteService: WeatherRemoteService,
+    private val weatherRepository: WeatherRepository,
 ) : CoroutineWorker(applicationContext, workerParameters) {
     override suspend fun doWork(): Result {
         val alertId = id
@@ -29,15 +29,12 @@ class WeatherAlertsWorker @AssistedInject constructor(
         val alertPreferences = weatherAlertsRepository.getAlert(alertId).firstOrNull()?.data ?: return Result.failure()
         val userPreferences =
             userPreferencesRepository.userPreferencesFlow.firstOrNull()?.data ?: return Result.failure()
-        val weatherData = try {
-            weatherRemoteService.getWeather(
-                latitude = userPreferences.location.location.latitude,
-                longitude = userPreferences.location.location.longitude,
-                language = userPreferences.language.languageCode,
-            )
-        } catch (_: Exception) {
-            return Result.retry()
-        }
+
+        val weatherData = weatherRepository.getWeatherData(
+            latitude = userPreferences.location.location.latitude,
+            longitude = userPreferences.location.location.longitude,
+            locale = userPreferences.language.toLocale(),
+        ).data ?: return Result.retry()
 
         weatherAlertsNotifier.notifyForAlert(weatherData.alerts ?: listOf(), alertPreferences)
 
