@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.iti.fineweather.core.di.CPUDispatcher
 import com.iti.fineweather.core.helpers.Resource
 import com.iti.fineweather.core.helpers.UiState
+import com.iti.fineweather.core.utils.ConnectionState
+import com.iti.fineweather.features.common.helpers.connectivity.ConnectivityHelper
 import com.iti.fineweather.features.common.repositories.UserPreferencesRepository
 import com.iti.fineweather.features.settings.models.UserPreferences
 import com.iti.fineweather.features.settings.utils.toLocale
@@ -24,6 +26,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WeatherViewModel @Inject constructor(
+    connectivityHelper: ConnectivityHelper,
     private val weatherRepository: WeatherRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     @CPUDispatcher private val computeDispatcher: CoroutineDispatcher,
@@ -38,6 +41,15 @@ class WeatherViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        viewModelScope.launch {
+            connectivityHelper.connectivityStateFlow.filter { it is ConnectionState.Available }.collectLatest {
+                if (_uiState.value is UiState.Error) {
+                    location?.let { location ->
+                        getWeatherData(location)
+                    }
+                }
+            }
+        }
         viewModelScope.launch {
             userPreferencesRepository.userPreferencesFlow.map { it.data }
                 .filterNotNull()
@@ -104,6 +116,7 @@ class WeatherViewModel @Inject constructor(
                         val weatherViewData = weatherDataMapper.mapRemoteToView(location, result.data, preferences)
                         _uiState.value.toLoaded(weatherViewData)
                     }
+
                     is Resource.Error -> {
                         _uiState.value.toError(result.error, preserveData = false)
                     }
@@ -112,7 +125,6 @@ class WeatherViewModel @Inject constructor(
             }
         }
     }
-
 
 
 }
