@@ -2,6 +2,7 @@ package com.iti.fineweather.features.alerts.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.common.util.VisibleForTesting
 import com.iti.fineweather.R
 import com.iti.fineweather.core.helpers.InvalidStateException
 import com.iti.fineweather.core.helpers.MissingValueException
@@ -26,7 +27,8 @@ class NewWeatherAlertViewModel @Inject constructor(private val alertsRepository:
     val alert: StateFlow<WeatherAlertTemplate?> = _alert.asStateFlow()
 
     private val _operationState = MutableSharedFlow<UiState<Unit>>()
-    val operationState = _operationState.stateIn(viewModelScope, SharingStarted.Lazily, UiState.Initial())
+    val operationState =
+        _operationState.stateIn(viewModelScope, SharingStarted.Lazily, UiState.Initial())
 
     fun newAlert() {
         viewModelScope.launch {
@@ -65,11 +67,13 @@ class NewWeatherAlertViewModel @Inject constructor(private val alertsRepository:
     private fun getAlert(): UserWeatherAlert {
         val template = _alert.value ?: throw InvalidStateException(R.string.error_submit_before_add)
         var alert = UserWeatherAlert(
-            alarmEnabled = template.alarmEnabled ?: throw MissingValueException(R.string.alerts_alert_type),
+            alarmEnabled = template.alarmEnabled
+                ?: throw MissingValueException(R.string.alerts_alert_type),
             repetitionType = template.repetitionType
                 ?: throw MissingValueException(R.string.alerts_repetition_type),
             time = template.time ?: throw MissingValueException(R.string.alerts_time),
-            startDate = template.startDate ?: throw MissingValueException(R.string.alerts_start_date),
+            startDate = template.startDate
+                ?: throw MissingValueException(R.string.alerts_start_date),
             endDate = template.endDate
         )
         if (alert.endDate?.isBefore(alert.startDate) == true) {
@@ -104,10 +108,12 @@ class NewWeatherAlertViewModel @Inject constructor(private val alertsRepository:
         update { template -> template.copy(endDate = endDate) }
     }
 
-    private fun update(update: suspend (WeatherAlertTemplate) -> WeatherAlertTemplate?) {
+    @VisibleForTesting
+    fun update(update: suspend (WeatherAlertTemplate) -> WeatherAlertTemplate?) {
         viewModelScope.launch {
             _operationState.wrap {
-                val template = _alert.value ?: throw InvalidStateException(R.string.error_submit_before_modify)
+                val template =
+                    _alert.value ?: throw InvalidStateException(R.string.error_submit_before_modify)
                 _alert.emit(update(template))
             }
         }
