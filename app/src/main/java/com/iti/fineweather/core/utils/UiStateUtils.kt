@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.channelFlow
 import timber.log.Timber
 
 suspend fun <T> MutableSharedFlow<UiState<T>>.wrapResource(operation: suspend () -> Resource<out T>) {
-    tryEmit(UiState.Loading())
+    emit(UiState.Loading())
     val result = operation()
     when (result) {
         is Resource.Success -> UiState.Loaded(result.data)
         is Resource.Error -> UiState.Error(result.error)
-    }.let { state -> tryEmit(state) }
+    }.let { state -> emit(state) }
 }
 
 suspend fun <T> MutableSharedFlow<UiState<T>>.wrap(operation: suspend () -> T): UiState<out T> {
-    tryEmit(UiState.Loading())
+    emit(UiState.Loading())
     return try {
         coroutineScope {
             UiState.Loaded(operation())
@@ -25,18 +25,18 @@ suspend fun <T> MutableSharedFlow<UiState<T>>.wrap(operation: suspend () -> T): 
     } catch (e: Exception) {
         Timber.e(e)
         UiState.Error(e)
-    }
+    }.also { it -> emit(it) }
 }
 
 suspend fun <T> (suspend () -> T).wrap() = channelFlow {
-    trySend(UiState.Loading())
+    send(UiState.Loading())
     try {
         coroutineScope {
-            trySend(UiState.Loaded(invoke()))
+            send(UiState.Loaded(invoke()))
         }
     } catch (e: Exception) {
         Timber.e(e)
-        trySend(UiState.Error(e))
+        send(UiState.Error(e))
     }
     close()
 }

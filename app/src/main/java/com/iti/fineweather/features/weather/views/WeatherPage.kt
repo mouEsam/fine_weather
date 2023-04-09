@@ -30,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
@@ -238,7 +239,11 @@ fun WeatherContent(
                         WeatherStatusIcon(weatherViewData)
 
                         Text(
-                            text = weatherViewData?.now?.weatherState?.description
+                            text = weatherViewData?.now?.weatherState?.description?.replaceFirstChar {
+                                if (it.isLowerCase()) it.titlecase(
+                                    Locale.getDefault()
+                                ) else it.toString()
+                            }
                                 ?: stringResource(R.string.placeholder_weather),
                             style = LocalTheme.typography.subtitle,
                         )

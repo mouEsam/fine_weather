@@ -15,15 +15,7 @@ import java.util.*
 
 enum class RepetitionType {
     SINGLE,
-    DAILY;
-
-    @Composable
-    fun toLocalizedName(): String {
-        return when (this) {
-            RepetitionType.SINGLE -> stringResource(R.string.alerts_repetition_type_once)
-            RepetitionType.DAILY -> stringResource(R.string.alerts_repetition_type_daily)
-        }
-    }
+    DAILY
 }
 
 @Parcelize

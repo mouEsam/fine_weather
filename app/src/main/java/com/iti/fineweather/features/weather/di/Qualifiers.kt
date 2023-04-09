@@ -7,3 +7,6 @@ annotation class WeatherUrl
 
 @Qualifier
 annotation class WeatherApiKey
+
+@Qualifier
+annotation class WeatherCache

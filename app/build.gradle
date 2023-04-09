@@ -151,12 +151,26 @@ dependencies {
     }
     implementation "com.github.luben:zstd-jni:$timeshape_compression_native_version@aar"
 
-    testImplementation "junit:junit:$junit_version"
-    androidTestImplementation "androidx.test.ext:junit:$junit_ext_version"
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "org.hamcrest:hamcrest:$hamcrest_version"
+    testImplementation "org.robolectric:robolectric:$roboelectric_version"
+    testImplementation "org.mockito:mockito-core:$mockito_version"
+    testImplementation "org.mockito.kotlin:mockito-kotlin:$mockito_kotlin_Version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    testImplementation "com.google.dagger:hilt-android-testing:$hilt_version"
+    kaptTest "com.google.dagger:hilt-android-compiler:$hilt_version"
+
+    testImplementation "androidx.arch.core:core-testing:$core_arch_test_version"
+    testImplementation "androidx.test:core:$core_test_version"
+    testImplementation "androidx.test:core-ktx:$core_test_version"
+    testImplementation "androidx.test.ext:junit:$junit_ext_version"
+    testImplementation "androidx.test.ext:junit-ktx:$junit_ext_version"
+
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espresso_version"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
 }
 
 protobuf {

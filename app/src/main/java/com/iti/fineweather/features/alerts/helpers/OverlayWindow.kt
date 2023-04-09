@@ -21,6 +21,8 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// TODO: instrument test
+
 @Singleton
 class OverlayWindow @Inject constructor(@ApplicationContext private val context: Context) {
 
