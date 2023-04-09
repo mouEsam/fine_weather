@@ -24,15 +24,17 @@ class PlaceBookmarksRepository @Inject constructor(
     @IODispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
-    val placeBookmarks: Flow<Resource<List<PlaceBookmark>>> = placeBookmarksDAO.getAllActive()
-        .map<_, Resource<List<PlaceBookmark>>> { bookmarks ->
-            Resource.Success.Local(bookmarks)
-        }.catch { exception ->
-            when (exception) {
-                is Exception -> emit(Resource.Error(exception))
-                else -> throw exception
-            }
-        }.flowOn(dispatcher)
+    val placeBookmarks: Flow<Resource<List<PlaceBookmark>>> by lazy {
+        placeBookmarksDAO.getAllActive()
+            .map<_, Resource<List<PlaceBookmark>>> { bookmarks ->
+                Resource.Success.Local(bookmarks)
+            }.catch { exception ->
+                when (exception) {
+                    is Exception -> emit(Resource.Error(exception))
+                    else -> throw exception
+                }
+            }.flowOn(dispatcher)
+    }
 
     suspend fun addBookmark(bookmark: PlaceBookmark) {
         withContext(dispatcher) {

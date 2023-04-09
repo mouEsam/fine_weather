@@ -6,6 +6,7 @@ import android.os.Build
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -331,15 +332,16 @@ fun NewAlertForm(
         newWeatherAlertViewModel.submit()
     }
 
-    val alarmPermission = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if (Settings.canDrawOverlays(context)) {
-            onAlarmGranted()
-        } else {
-            coroutineScope.launch {
-                snackbarState.showSnackbar(noOverlayError)
+    val alarmPermission =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (Settings.canDrawOverlays(context)) {
+                onAlarmGranted()
+            } else {
+                coroutineScope.launch {
+                    snackbarState.showSnackbar(noOverlayError)
+                }
             }
         }
-    }
 
     fun requestAlarmPermission() {
         if (!Settings.canDrawOverlays(context)) {
@@ -353,15 +355,16 @@ fun NewAlertForm(
         }
     }
 
-    val notificationPermissions = rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS) { granted ->
-        if (granted) {
-            onNotificationGranted()
-        } else {
-            coroutineScope.launch {
-                snackbarState.showSnackbar(noNotificationsError)
+    val notificationPermissions =
+        rememberPermissionState(android.Manifest.permission.POST_NOTIFICATIONS) { granted ->
+            if (granted) {
+                onNotificationGranted()
+            } else {
+                coroutineScope.launch {
+                    snackbarState.showSnackbar(noNotificationsError)
+                }
             }
         }
-    }
 
     fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -378,7 +381,7 @@ fun NewAlertForm(
         Column(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(
-                space = LocalTheme.spaces.small,
+                space = LocalTheme.spaces.medium,
                 alignment = Alignment.Top,
             ),
             modifier = Modifier.fillMaxWidth().background(
@@ -435,7 +438,11 @@ fun NewAlertForm(
                 }
             }
             FlowRow(
-                modifier = Modifier.fillMaxWidth().align(Alignment.CenterHorizontally),
+                modifier = Modifier
+                    .padding(vertical = LocalTheme.spaces.medium)
+                    .fillMaxWidth()
+                    .align(Alignment.CenterHorizontally)
+                    .animateContentSize(),
                 horizontalArrangement = Arrangement.spacedBy(
                     space = LocalTheme.spaces.medium,
                     alignment = Alignment.CenterHorizontally,
@@ -588,7 +595,8 @@ fun AlertDatePickerDialog(
         },
         onDismissRequest = dismiss,
     ) {
-        val today = remember { LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() }
+        val today =
+            remember { LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli() }
         DatePicker(
             state = datePickerState,
             dateValidator = { date -> date >= today }
