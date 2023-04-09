@@ -15,7 +15,7 @@ interface AppColorScheme {
 }
 
 object AppLightColorScheme : AppColorScheme {
-    override val main: Color = AppColorPalette.Green40
+    override val main: Color = AppColorPalette.Blue40
     override val mainContent: Color = AppColorPalette.White
     override val background: Color = AppColorPalette.Gray99
     override val text: Color = AppColorPalette.Gray10
@@ -24,20 +24,25 @@ object AppLightColorScheme : AppColorScheme {
         primary = main,
         onPrimary = mainContent,
         background = background,
-        onBackground = text
+        onBackground = text,
+        surface = background,
+        onSurface = text,
     )
 }
 
 object AppDarkColorScheme : AppColorScheme {
-    override val main: Color = AppColorPalette.Green80
-    override val mainContent: Color = AppColorPalette.Green20
-    override val background: Color = AppColorPalette.Gray10
-    override val text: Color = AppColorPalette.Gray90
+    override val main: Color = AppColorPalette.Indigo40
+    override val mainContent: Color = AppColorPalette.White
+    override val background: Color = AppColorPalette.Purple40
+    override val text: Color = AppColorPalette.White
 
     override fun mapToMaterialColorSchema(): ColorScheme = darkColorScheme(
-        primary = AppLightColorScheme.main,
-        onPrimary = AppLightColorScheme.mainContent,
-        background = AppLightColorScheme.background,
-        onBackground = AppLightColorScheme.text
+        primary = main,
+        onPrimary = mainContent,
+        background = background,
+        onBackground = text,
+        surface = mainContent,
+        onSurface = AppColorPalette.Blue40,
+        surfaceVariant = AppColorPalette.Gray10,
     )
 }
