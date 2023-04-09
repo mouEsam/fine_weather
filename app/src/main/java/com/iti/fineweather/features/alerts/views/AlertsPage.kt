@@ -33,6 +33,7 @@ import com.iti.fineweather.core.utils.error
 import com.iti.fineweather.features.alerts.entities.RepetitionType
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
 import com.iti.fineweather.features.alerts.models.WeatherAlertTemplate
+import com.iti.fineweather.features.alerts.utils.toLocalizedName
 import com.iti.fineweather.features.alerts.viewmodels.NewWeatherAlertViewModel
 import com.iti.fineweather.features.alerts.viewmodels.WeatherAlertsViewModel
 import com.iti.fineweather.features.common.utils.horizontalGradientDirectional

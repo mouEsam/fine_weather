@@ -17,7 +17,6 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.ForegroundInfo
 import com.iti.fineweather.R
 import com.iti.fineweather.features.alerts.entities.UserWeatherAlert
-import com.iti.fineweather.features.alerts.helpers.OverlayWindow
 import com.iti.fineweather.features.alerts.views.AlertsOverlayActivity
 import com.iti.fineweather.features.common.helpers.Constants
 import com.iti.fineweather.features.weather.helpers.WeatherDataMapper
@@ -27,11 +26,12 @@ import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
+// TODO: instrument test
+
 @Singleton
 class WeatherAlertsNotifier @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val weatherDataMapper: WeatherDataMapper,
-    private val overlayWindow: OverlayWindow,
 ) {
     companion object {
         private const val CHANNEL_ID = "weather_alerts_notification_channel"

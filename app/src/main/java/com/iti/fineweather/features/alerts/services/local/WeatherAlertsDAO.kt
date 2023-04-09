@@ -27,7 +27,4 @@ interface WeatherAlertsDAO {
 
     @Update
     suspend fun updateAll(alerts: List<UserWeatherAlert>)
-
-    @Delete
-    suspend fun delete(alerts: UserWeatherAlert)
 }
