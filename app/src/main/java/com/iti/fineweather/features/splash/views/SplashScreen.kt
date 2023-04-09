@@ -153,7 +153,11 @@ fun MissingLanguageDialog(
         title = { Text(text = stringResource(R.string.splash_select_language)) },
         text = {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth().padding(LocalTheme.spaces.medium),
+                verticalArrangement = Arrangement.spacedBy(
+                    space = LocalTheme.spaces.large,
+                    alignment = Alignment.Top,
+                )
             ) {
                 listOf(Language.ARABIC, Language.ENGLISH).forEach { item ->
                     AppRadioButton(

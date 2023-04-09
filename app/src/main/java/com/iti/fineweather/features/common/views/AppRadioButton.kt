@@ -3,6 +3,7 @@ package com.iti.fineweather.features.common.views
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
@@ -22,6 +23,7 @@ fun AppRadioButton(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(
+            modifier = Modifier.size(LocalTheme.spaces.xLarge),
             selected = selected,
             onClick = {
                 onSelected()

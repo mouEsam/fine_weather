@@ -27,15 +27,17 @@ class WeatherAlertsRepository @Inject constructor(
     @IODispatcher private val dispatcher: CoroutineDispatcher = Dispatchers.IO,
 ) {
 
-    val weatherAlertsFlow: Flow<Resource<List<UserWeatherAlert>>> = weatherAlertsDAO.getAllActive()
-        .map<_, Resource<List<UserWeatherAlert>>> { alerts ->
-            Resource.Success.Local(alerts)
-        }.catch { exception ->
-            when (exception) {
-                is Exception -> emit(Resource.Error(exception))
-                else -> throw exception
-            }
-        }.flowOn(dispatcher)
+    val weatherAlertsFlow: Flow<Resource<List<UserWeatherAlert>>> by lazy {
+        weatherAlertsDAO.getAllActive()
+            .map<_, Resource<List<UserWeatherAlert>>> { alerts ->
+                Resource.Success.Local(alerts)
+            }.catch { exception ->
+                when (exception) {
+                    is Exception -> emit(Resource.Error(exception))
+                    else -> throw exception
+                }
+            }.flowOn(dispatcher)
+    }
 
     suspend fun getAlert(id: UUID): Flow<Resource<UserWeatherAlert>> {
         return weatherAlertsDAO.getById(id).map<_, Resource<UserWeatherAlert>> { alerts ->
@@ -64,6 +66,7 @@ class WeatherAlertsRepository @Inject constructor(
             weatherAlertScheduler.cancelAlert(alert)
         }
     }
+
     suspend fun setExhausted(alert: UserWeatherAlert) {
         withContext(dispatcher) {
             if (alert.exhausted) {
