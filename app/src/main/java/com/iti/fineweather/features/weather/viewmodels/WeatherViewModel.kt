@@ -57,6 +57,13 @@ class WeatherViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.userPreferencesFlow.map { it.data }
                 .filterNotNull()
+                .distinctUntilChangedBy { preferences -> preferences.location }.collectLatest { preferences ->
+                    getWeatherData(preferences.location.toWeatherLocation())
+                }
+        }
+        viewModelScope.launch {
+            userPreferencesRepository.userPreferencesFlow.map { it.data }
+                .filterNotNull()
                 .distinctUntilChangedBy { preferences ->
                     Pair(preferences.temperatureUnit, preferences.windSpeedUnit)
                 }.collectLatest { preferences ->
