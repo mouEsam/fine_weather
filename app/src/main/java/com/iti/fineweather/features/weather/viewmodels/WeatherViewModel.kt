@@ -1,5 +1,6 @@
 package com.iti.fineweather.features.weather.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.iti.fineweather.core.di.CPUDispatcher
@@ -57,6 +58,7 @@ class WeatherViewModel @Inject constructor(
         viewModelScope.launch {
             userPreferencesRepository.userPreferencesFlow.map { it.data }
                 .filterNotNull()
+                .drop(1)
                 .distinctUntilChangedBy { preferences -> preferences.location }.collectLatest { preferences ->
                     getWeatherData(preferences.location.toWeatherLocation())
                 }
@@ -146,5 +148,7 @@ class WeatherViewModel @Inject constructor(
             getWeatherData(location)
         }
     }
+
+
 
 }
