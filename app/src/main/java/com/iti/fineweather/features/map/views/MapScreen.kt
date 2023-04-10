@@ -16,6 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.maps.android.compose.*
 import com.iti.fineweather.R
@@ -30,6 +31,7 @@ import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.viewmodels.MapPlaceViewModel
 import com.iti.fineweather.features.map.viewmodels.MapPlacesViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 object MapScreen : Screen<MapScreen.MapRoute> {
 
@@ -69,7 +71,12 @@ fun MapScreen(
         ) { innerPadding ->
             val uiSettings by remember { mutableStateOf(MapUiSettings()) }
             val properties by remember {
-                mutableStateOf(MapProperties(mapType = MapType.NORMAL))
+                mutableStateOf(
+                    MapProperties(
+                        mapType = MapType.NORMAL,
+                        isMyLocationEnabled = true,
+                    )
+                )
             }
             var selectedLocation by rememberSaveable { mutableStateOf<MapPlaceResult?>(null) }
             val cameraPositionState = rememberCameraPositionState {}
@@ -87,10 +94,21 @@ fun MapScreen(
                 coroutineScope.launch {
                     cameraPositionState.animate(
                         CameraUpdateFactory
-                            .newCameraPosition(CameraPosition.fromLatLngZoom(location.location, 10f)),
+                            .newCameraPosition(
+                                CameraPosition.fromLatLngZoom(
+                                    location.location,
+                                    10f
+                                )
+                            ),
                         durationMs = 500, // TODO: extract
                     )
                 }
+            }
+
+            fun onMapLocation(latLng: LatLng) {
+                mapPlaceViewModel.getPlace(latLng)
+                keyboard?.hide()
+                focusManager.clearFocus()
             }
             Column(
                 modifier = Modifier
@@ -128,11 +146,11 @@ fun MapScreen(
                         cameraPositionState = cameraPositionState,
                         properties = properties,
                         uiSettings = uiSettings,
-                        onMapClick = { latLng ->
-                            mapPlaceViewModel.getPlace(latLng)
-                            keyboard?.hide()
-                            focusManager.clearFocus()
-                        },
+                        onMapClick = ::onMapLocation,
+                        onMyLocationClick = { location ->
+                            val latLng = LatLng(location.latitude, location.longitude)
+                            onMapLocation(latLng)
+                        }
                     ) {
                         selectedLocation?.let { location ->
                             Marker(
