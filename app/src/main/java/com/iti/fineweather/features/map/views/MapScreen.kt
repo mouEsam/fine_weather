@@ -69,7 +69,7 @@ fun MapScreen(
         ) { innerPadding ->
             val uiSettings by remember { mutableStateOf(MapUiSettings()) }
             val properties by remember {
-                mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
+                mutableStateOf(MapProperties(mapType = MapType.NORMAL))
             }
             var selectedLocation by rememberSaveable { mutableStateOf<MapPlaceResult?>(null) }
             val cameraPositionState = rememberCameraPositionState {}
