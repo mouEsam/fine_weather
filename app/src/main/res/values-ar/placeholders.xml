@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="placeholder_location">Your city</string>
-    <string name="placeholder_weather">N/A</string>
-    <string name="placeholder_temperature">N/A</string>
-    <string name="placeholder_wind">N/A</string>
-    <string name="placeholder_cloud">N/A</string>
-    <string name="placeholder_humidity">N/A</string>
-    <string name="placeholder_pressure">N/A</string>
-    <string name="placeholder_day">N/A</string>
-    <string name="placeholder_time">N/A</string>
-    <string name="placeholder_description">N/A</string>
-    <string name="placeholder_event">N/A</string>
-    <string name="placeholder_event_description">N/A</string>
+    <string name="placeholder_location">مدينتك</string>
+    <string name="placeholder_weather">غير متوفر</string>
+    <string name="placeholder_temperature">غير متوفر</string>
+    <string name="placeholder_wind">غير متوفر</string>
+    <string name="placeholder_cloud">غير متوفر</string>
+    <string name="placeholder_humidity">غير متوفر</string>
+    <string name="placeholder_pressure">غير متوفر</string>
+    <string name="placeholder_day">غير متوفر</string>
+    <string name="placeholder_time">غير متوفر</string>
+    <string name="placeholder_description">غير متوفر</string>
+    <string name="placeholder_event">غير متوفر</string>
+    <string name="placeholder_event_description">غير متوفر</string>
 </resources>
