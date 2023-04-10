@@ -1,7 +1,11 @@
 package com.iti.fineweather.features.map.views
 
+import android.Manifest
+import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -14,6 +18,9 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.MutableLiveData
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -27,11 +34,11 @@ import com.iti.fineweather.core.navigation.LocalNavigation
 import com.iti.fineweather.core.navigation.RouteInfo
 import com.iti.fineweather.core.navigation.Screen
 import com.iti.fineweather.core.theme.LocalTheme
+import com.iti.fineweather.features.common.views.showErrorSnackbar
 import com.iti.fineweather.features.map.models.MapPlaceResult
 import com.iti.fineweather.features.map.viewmodels.MapPlaceViewModel
 import com.iti.fineweather.features.map.viewmodels.MapPlacesViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 object MapScreen : Screen<MapScreen.MapRoute> {
 
@@ -46,7 +53,7 @@ object MapScreen : Screen<MapScreen.MapRoute> {
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+@OptIn(ExperimentalComposeUiApi::class, ExperimentalPermissionsApi::class)
 @Composable
 @VisibleForTesting
 fun MapScreen(
@@ -69,17 +76,39 @@ fun MapScreen(
             contentColor = LocalTheme.colors.mainContent,
             snackbarHost = { SnackbarHost(LocalScaffold.snackbarHost) },
         ) { innerPadding ->
+            val snackBarState = LocalScaffold.snackbarHost
+            val noGpsError = stringResource(R.string.error_location_permission)
+            val permissions = rememberMultiplePermissionsState(
+                permissions = listOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                )
+            ) { permissions ->
+                @SuppressLint("MissingPermission")
+                if (permissions.none { p -> p.value }) {
+                    coroutineScope.launch {
+                        snackBarState.showSnackbar(noGpsError)
+                    }
+                }
+            }
+
+            val hasLocationAccess by remember { derivedStateOf { permissions.permissions.any { it.status == PermissionStatus.Granted } } }
+
             val uiSettings by remember { mutableStateOf(MapUiSettings()) }
-            val properties by remember {
+            var properties by remember {
                 mutableStateOf(
                     MapProperties(
                         mapType = MapType.NORMAL,
-                        isMyLocationEnabled = true,
+                        isMyLocationEnabled = hasLocationAccess,
                     )
                 )
             }
             var selectedLocation by rememberSaveable { mutableStateOf<MapPlaceResult?>(null) }
             val cameraPositionState = rememberCameraPositionState {}
+
+            LaunchedEffect(key1 = hasLocationAccess) {
+                properties = properties.copy(isMyLocationEnabled = hasLocationAccess)
+            }
 
             DisposableEffect(key1 = true) {
                 onDispose {
@@ -126,16 +155,12 @@ fun MapScreen(
                     contentAlignment = Alignment.Center,
                 ) {
                     val uiState by mapPlaceViewModel.uiState.collectAsState()
+                    showErrorSnackbar(uiState)
                     LaunchedEffect(key1 = uiState) {
                         when (uiState) {
-                            is UiState.Error -> {
-                                // TODO: show toast
-                            }
-
                             is UiState.Loaded -> {
                                 onLocation(uiState.data!!)
                             }
-
                             else -> {}
                         }
                     }
@@ -161,6 +186,21 @@ fun MapScreen(
                             )
                         }
                     }
+                    if (!hasLocationAccess)
+                        IconButton(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(LocalTheme.spaces.large),
+                            onClick = {
+                                permissions.launchMultiplePermissionRequest()
+                            },
+                            colors = IconButtonDefaults.filledIconButtonColors()
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.MyLocation,
+                                contentDescription = null,
+                            )
+                        }
                     when (uiState) {
                         is UiState.Loading -> {
                             CircularProgressIndicator()

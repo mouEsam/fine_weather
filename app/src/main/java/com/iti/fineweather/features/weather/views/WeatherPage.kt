@@ -30,7 +30,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
@@ -134,11 +133,12 @@ fun WeatherContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Surface(
+                    modifier = Modifier.fillMaxWidth().weight(1.0f),
                     color = Color.Unspecified,
                     contentColor = foregroundColor,
                 ) {
                     Column(
-                        modifier = Modifier.fillMaxWidth().weight(1.0f),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Row(
@@ -236,7 +236,10 @@ fun WeatherContent(
                             )
                         }
 
-                        WeatherStatusIcon(weatherViewData)
+                        WeatherStatusIcon(
+                            weatherViewData = weatherViewData,
+//                            modifier = Modifier.weight(1.0f),
+                        )
 
                         Text(
                             text = weatherViewData?.now?.weatherState?.description?.replaceFirstChar {
@@ -252,6 +255,7 @@ fun WeatherContent(
                             style = LocalTheme.typography.headerLarge,
                             temp = weatherViewData?.now?.temperature,
                             units = weatherViewData?.units,
+                             modifier = Modifier.weight(1.0f),
                         )
 
                         WeatherParamRow(
@@ -346,7 +350,10 @@ fun WeatherContent(
 }
 
 @Composable
-fun WeatherStatusIcon(weatherViewData: WeatherViewData?) {
+fun WeatherStatusIcon(
+    weatherViewData: WeatherViewData?,
+    modifier: Modifier = Modifier,
+) {
     val painter: Painter = if (weatherViewData != null) {
         val context = LocalContext.current
         val weatherState = weatherViewData.now.weatherState
@@ -362,7 +369,7 @@ fun WeatherStatusIcon(weatherViewData: WeatherViewData?) {
     Image(
         painter = painter,
         contentDescription = null,
-        modifier = Modifier.fillMaxWidth(0.4f),
+        modifier = modifier.fillMaxWidth(0.4f),
     )
 }
 
@@ -666,14 +673,16 @@ fun Alerts(
         Box(
             modifier = Modifier
                 .padding(horizontal = LocalTheme.spaces.large)
-                .fillMaxSize()
+                .fillMaxWidth()
                 .clip(
                     shape = LocalTheme.shapes.mediumRoundedCornerShape,
                 ).background(
                     color = LocalContentColor.current.copy(alpha = 0.8f)
                 ).padding(
-                    vertical = LocalTheme.spaces.medium,
+                    vertical = LocalTheme.spaces.xLarge,
                     horizontal = LocalTheme.spaces.large,
+                ).defaultMinSize(
+                    minHeight = LocalTheme.spaces.xxxxxLarge * 2,
                 ),
             contentAlignment = Alignment.Center,
         ) {
@@ -860,6 +869,7 @@ fun TemperatureItem(
     temp: Float? = null,
     units: WeatherUnitData? = null,
     style: TextStyle,
+    modifier: Modifier = Modifier,
 ) {
     Text(
         style = style,
@@ -880,6 +890,7 @@ fun TemperatureItem(
                 }
             }
         },
+        modifier = modifier,
     )
 }
 

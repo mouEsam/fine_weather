@@ -11,4 +11,6 @@ object AppSpace {
     val xxLarge: Dp = 32.dp
     val xxxLarge: Dp = 42.dp
     val xxxxLarge: Dp = 56.dp
+    val xxxxxLarge: Dp = 64.dp
+    val xxxxxxLarge: Dp = 76.dp
 }
