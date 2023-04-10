@@ -34,6 +34,7 @@ class WeatherViewModel @Inject constructor(
     private val weatherDataMapper: WeatherDataMapper,
 ) : ViewModel() {
 
+    private var locationJob: Job? = null
     private var job: Job? = null
     private var location: WeatherLocation? = null
     private var weatherDataResponse: RemoteWeatherResponse? = null
@@ -55,7 +56,7 @@ class WeatherViewModel @Inject constructor(
                     refresh()
                 }
         }
-        viewModelScope.launch {
+        locationJob = viewModelScope.launch {
             userPreferencesRepository.userPreferencesFlow.map { it.data }
                 .filterNotNull()
                 .drop(1)
@@ -80,6 +81,11 @@ class WeatherViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun stopListeningToLocation() {
+        locationJob?.cancel()
+        locationJob = null
     }
 
     fun getWeatherData(weatherLocation: WeatherLocation? = null) {

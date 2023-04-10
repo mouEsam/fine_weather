@@ -73,6 +73,9 @@ fun WeatherPage(
 ) {
     LaunchedEffect(key1 = weatherViewModel) {
         if (weatherViewModel.uiState.value is UiState.Initial) {
+            if (weatherLocation != null) {
+                weatherViewModel.stopListeningToLocation()
+            }
             weatherViewModel.getWeatherData(weatherLocation)
         }
     }
